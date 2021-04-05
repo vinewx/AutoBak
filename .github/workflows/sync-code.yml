@@ -1,0 +1,60 @@
+name: sync-code
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/30 0-16,22-23 * * *'
+jobs:
+  sync:
+    runs-on: ubuntu-18.04
+    if: github.repository == 'vinewx/AutoBak'
+    timeout-minutes: 2
+    steps:
+    - name: Init Build Dependencies
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo -E rm -rf /etc/apt/sources.list.d
+        sudo -E apt-get update -y
+        sudo -E apt-get install -y build-essential git git-core curl wget
+        sudo -E apt-get clean -y
+        git config --global user.name 'GitHub Actions' && git config --global user.email 'noreply@github.com'
+
+    - name: Get Code from Private Repository
+      run: |
+        mkdir -p ~/.ssh
+        echo -e "${{ secrets.EVINEKEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan gitee.com > ~/.ssh/known_hosts
+        git clone -b master git@gitee.com:evine/jd_shell.git evine
+        echo -e "${{ secrets.LXKEY }}" > ~/.ssh/id_rsa
+        git clone -b master git@gitee.com:lxk0301/jd_scripts.git lxk0301
+        git clone -b master https://github.com/whyour/qinglong whyour
+
+    - name: Push evine
+      uses: ad-m/github-push-action@master
+      with:
+        directory: evine
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: evine
+
+    - name: Push lxk0301
+      uses: ad-m/github-push-action@master
+      with:
+        directory: lxk0301
+        github_token: ${{ secrets.GITHUBKEY }}
+        branch: lxk0301
+
+    - name: Push whyour
+      uses: ad-m/github-push-action@master
+      with:
+        directory: whyour
+        github_token: ${{ secrets.GITHUBKEY }}
+        branch: whyour
+
+    - name: Delete Workflow Runs
+      uses: Mattraks/delete-workflow-runs@main
+      with:
+        token: ${{ github.token }}
+        repository: ${{ github.repository }}
+        retain_days: 1
+        keep_minimum_runs: 0

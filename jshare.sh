@@ -49,6 +49,8 @@ env_name=(
     JDSGMH_SHARECODES
     JDCFD_SHARECODES
     JDHEALTH_SHARECODES
+    JD818_SHARECODES
+    CITY_SHARECODES
 )
 var_name=(
     Cookie
@@ -65,6 +67,8 @@ var_name=(
     ForOtherSgmh
     ForOtherCfd
     ForOtherHealth
+    ForOtherCarnivalcity
+    ForOtherCity
 )
 
 ## 所有有互助码的活动，把脚本名称列在 name_js 中，对应 config.sh 中互助码后缀列在 name_config 中，中文名称列在 name_chinese 中。
@@ -83,6 +87,8 @@ name_js=(
     jd_sgmh
     jd_cfd
     jd_health
+    jd_carnivalcity
+    jd_city
 )
 name_config=(
     Fruit
@@ -98,6 +104,8 @@ name_config=(
     Sgmh
     Cfd
     Health
+    Carnivalcity
+    City
 )
 name_chinese=(
     东东农场
@@ -113,6 +121,8 @@ name_chinese=(
     闪购盲盒
     京喜财富岛
     东东健康社区
+    京东手机狂欢城
+    城城领现金
 )
 
 ## 软连接及其原始文件对应关系

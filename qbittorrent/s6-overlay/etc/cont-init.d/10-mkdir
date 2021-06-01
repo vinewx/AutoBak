@@ -44,11 +44,12 @@ make_dir() {
         rm -rf ${QBITTORRENT_HOME}/qBittorrent/data
         ln -sf /data/data ${QBITTORRENT_HOME}/qBittorrent/data
     fi
-    if [ -d /data/logs ] && [[ $(readlink -f /data/logs) != /data/data/logs  ]]; then
+    if [[ $(readlink -f /data/logs 2>/dev/null) != /data/data/logs  ]]; then
         rm -rf /data/logs
+        cd /data
+        ln -sf data/logs logs
     fi
-    cd /data
-    ln -sf data/logs logs
+    
 }
 
 make_dir 2>&1 | sed "s#^#[cont-init.d] $(basename $0): \1#g"

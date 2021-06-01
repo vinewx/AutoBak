@@ -1,7 +1,7 @@
 ARG LIBTORRENT_VERSION=1.2.13
 ARG QBITTORRENT_VERSION=4.3.5
 
-FROM alpine:3.13 AS builder
+FROM alpine AS builder
 
 RUN apk add --update --no-cache \
         autoconf \

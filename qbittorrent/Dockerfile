@@ -3,7 +3,8 @@ ARG QBITTORRENT_VERSION=4.3.5
 
 FROM alpine AS builder
 
-RUN apk add --update --no-cache \
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
+    && apk add --update --no-cache \
         autoconf \
         automake \
         binutils \
@@ -28,7 +29,8 @@ RUN cd /tmp \
     && make install-strip \
     && ls -al /usr/local/lib/
 
-RUN apk add --update --no-cache \
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
+    && apk add --update --no-cache \
         qt5-qtbase \
         qt5-qttools-dev \
     && rm -rf /tmp/* /var/cache/apk/*
@@ -59,7 +61,8 @@ ENV QBITTORRENT_HOME="/home/qbittorrent" \
     SHELL=/bin/bash \
     PS1="\u@\h:\w \$ "
 
-RUN apk --update --no-cache add \
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
+    && apk --update --no-cache add \
         bind-tools \
         curl \
         openssl \

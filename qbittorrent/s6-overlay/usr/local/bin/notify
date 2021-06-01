@@ -34,7 +34,7 @@ notify_telegram () {
         err_code=$(echo "$send_result" | jq .err_code)
         [[ err_code == 400 ]] && err_message="请主动给bot发送一条消息并检查接收用户ID是否正确。"
         [[ err_code == 401 ]] && err_message="Telegram Bot Token 填写错误。"
-        echo -e "[$(date +'%Y-%m-%d %H:%M:%S')] 发送Telegram通知失败，错误代码：$err_code，错误消息：$err_message\n"
+        echo -e "[$(date +'%Y-%m-%d %H:%M:%S')] [$(basename $0)] 发送Telegram通知失败，错误代码：$err_code，错误消息：$err_message\n"
     fi
 }
 

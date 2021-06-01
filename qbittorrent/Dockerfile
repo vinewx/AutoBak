@@ -48,7 +48,6 @@ FROM alpine
 COPY --from=nevinee/s6-overlay-stage:latest / /
 COPY --from=builder /usr/local/lib/libtorrent-rasterbar.so.10.0.0 /usr/lib/libtorrent-rasterbar.so.10
 COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
-COPY s6-overlay /
 
 ENV QBITTORRENT_HOME="/home/qbittorrent" \
     TZ="Asia/Shanghai" \
@@ -77,6 +76,7 @@ RUN apk --update --no-cache add \
     && useradd qbittorrent -u ${PUID} -U -m -d ${QBITTORRENT_HOME} -s /bin/bash \
     && qbittorrent-nox --version
 
+COPY s6-overlay /
 WORKDIR /data
 VOLUME ["/data"]
 ENTRYPOINT ["/init"]

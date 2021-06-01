@@ -8,4 +8,4 @@ if [[ -z ${CRON_AUTO_CATEGORY} ]]; then
     CRON_AUTO_CATEGORY="38 * * * *"
 fi
 
-echo -e "${CRON_HEALTH_CHECK} health-check\n${CRON_AUTO_CATEGORY} auto-cat" | crontab -
+echo -e "${CRON_HEALTH_CHECK} health-check\n${CRON_AUTO_CATEGORY} auto-cat -a" | crontab -

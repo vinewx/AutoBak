@@ -49,7 +49,6 @@ make_dir() {
         cd /data
         ln -sf data/logs logs
     fi
-    
 }
 
 make_dir 2>&1 | sed "s#^#[cont-init.d] $(basename $0): \1#g"

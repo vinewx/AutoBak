@@ -1,4 +1,4 @@
-is_ssl=$(grep -i "WebUI\\\Enabled" /data/config/qBittorrent.conf | awk -F "=" '{print $2}')
+is_ssl=$(grep -i "WebUI\\\HTTPS\\\Enabled=" /data/config/qBittorrent.conf | awk -F "=" '{print $2}')
 
 if [[ $is_ssl == true ]]; then
     cmd_curl="curl -sk"

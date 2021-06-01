@@ -1,7 +1,7 @@
 ARG LIBTORRENT_VERSION=1.2.13
 ARG QBITTORRENT_VERSION=4.3.5
 
-FROM alpine:3.12 AS builder
+FROM alpine:3.13 AS builder
 
 RUN apk add --update --no-cache \
         autoconf \
@@ -35,13 +35,13 @@ RUN apk add --update --no-cache \
 
 ARG QBITTORRENT_VERSION
 RUN cd /tmp \
-  && git clone --branch release-${QBITTORRENT_VERSION} https://github.com/qbittorrent/qBittorrent.git \
-  && cd qBittorrent \
-  && ./configure --disable-gui \
-  && make -j$(nproc) \
-  && make install \
-  && ls -al /usr/local/bin/ \
-  && qbittorrent-nox --help
+    && git clone --branch release-${QBITTORRENT_VERSION} https://github.com/qbittorrent/qBittorrent.git \
+    && cd qBittorrent \
+    && ./configure --disable-gui \
+    && make -j$(nproc) \
+    && make install \
+    && ls -al /usr/local/bin/ \
+    && qbittorrent-nox --help
 
 FROM alpine
 

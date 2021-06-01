@@ -32,21 +32,21 @@ make_dir() {
     if [ ! -d ${QBITTORRENT_HOME}/qBittorrent ]; then
         mkdir -p ${QBITTORRENT_HOME}/qBittorrent
     fi
-    if [ -d ${QBITTORRENT_HOME}/qBittorrent/cache ] && [[ $(readlink -f ${QBITTORRENT_HOME}/qBittorrent/cache) != /data/cache  ]]; then
+    if [[ $(readlink -f ${QBITTORRENT_HOME}/qBittorrent/cache 2>/dev/null) != /data/cache  ]]; then
         rm -rf ${QBITTORRENT_HOME}/qBittorrent/cache
+        ln -sf /data/cache ${QBITTORRENT_HOME}/qBittorrent/cache
     fi
-    if [ -d ${QBITTORRENT_HOME}/qBittorrent/config ] && [[ $(readlink -f ${QBITTORRENT_HOME}/qBittorrent/config) != /data/config  ]]; then
+    if [[ $(readlink -f ${QBITTORRENT_HOME}/qBittorrent/config 2>/dev/null) != /data/config  ]]; then
         rm -rf ${QBITTORRENT_HOME}/qBittorrent/config
+        ln -sf /data/config ${QBITTORRENT_HOME}/qBittorrent/config
     fi
-    if [ -d ${QBITTORRENT_HOME}/qBittorrent/data ] && [[ $(readlink -f ${QBITTORRENT_HOME}/qBittorrent/data) != /data/data  ]]; then
+    if [[ $(readlink -f ${QBITTORRENT_HOME}/qBittorrent/data 2>/dev/null) != /data/data  ]]; then
         rm -rf ${QBITTORRENT_HOME}/qBittorrent/data
+        ln -sf /data/data ${QBITTORRENT_HOME}/qBittorrent/data
     fi
     if [ -d /data/logs ] && [[ $(readlink -f /data/logs) != /data/data/logs  ]]; then
         rm -rf /data/logs
     fi
-    ln -sf /data/cache ${QBITTORRENT_HOME}/qBittorrent/cache
-    ln -sf /data/config ${QBITTORRENT_HOME}/qBittorrent/config
-    ln -sf /data/data ${QBITTORRENT_HOME}/qBittorrent/data
     cd /data
     ln -sf data/logs logs
 }

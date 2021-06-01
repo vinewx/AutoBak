@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ./share
+. /usr/local/bin/share
 
 if ! $cmd_curl ${api_url_base}/app/version &>/dev/null; then
     echo "[$(date +'%Y-%m-%d %H:%M:%S.%3N')] [$(basename $0)] ${HOSTNAME} 已经宕机了，发送通知消息..."

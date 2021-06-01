@@ -23,7 +23,7 @@ send_notify() {
 if [[ $# -ne 1 ]]; then
     echo "[$(date +'%Y-%m-%d %H:%M:%S.%3N')] [$(basename $0)] 传入参数不正确，请只传入HASH值，形如：dl-finish \"%I\"..."
 else
-    . ./share
+    . /usr/local/bin/share
     torrent_hash="$1"
     auto-cat -i "$torrent_hash"
     send_notify "$torrent_hash"

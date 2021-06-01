@@ -6,8 +6,6 @@
 ## 注意：本地编译仍然会花费好几个小时，并且极有可能中途报错，若中途报错，建议手动复制命令一条一条运行。
 ## 在Dockerfile同目录下运行。
 
-set -e
-
 ## 版本、镜像名称等
 export QB_FULL_VERSION=4.3.5
 export LIBTORRENT_FULL_VERSION=1.2.13

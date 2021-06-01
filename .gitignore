@@ -1,2 +1,4 @@
 /jdc/s6*
 /jd/src
+run.sh
+*.log

@@ -40,9 +40,9 @@ services:
     volumes:
       - ./data:/data
     environment:
-      - WEBUI_PORT=8080   # 可自定义
-      - BT_PORT=34567     # 可自定义
-      - TZ=Asia/Shanghai
+      - WEBUI_PORT=8080   # WEBUI控制端口，可自定义
+      - BT_PORT=34567     # BT监听端口，可自定义
+      - TZ=Asia/Shanghai  # 时区
     ports:
       - 8080:8080        # 冒号左右一致，必须同WEBUI_PORT
       - 34567:34567      # 冒号左右一致，必须同BT_PORT
@@ -51,7 +51,7 @@ services:
 
 ## 环境变量清单
 
-在创建命令中，包括已经提及的WEBUI_PORT, BT_PORT, TZ在内，总共以下环境变量，请根据需要自行添加到创建命令中：
+在创建命令中，包括已经提及的`WEBUI_PORT`, `BT_PORT`, `TZ`在内，总共以下环境变量，请根据需要自行添加到创建命令中：
 
 | 序号 | 变量名              | 默认值        | 说明 |
 | :-: | :-:                | :-:           | -    |
@@ -65,8 +65,8 @@ services:
 |  8  | DD_BOT_SECRET      |               | 通知渠道钉钉，如需使用需要和DD_BOT_TOKEN同时赋值 |
 |  9  | IYUU_TOKEN         |               | 通知渠道爱语飞飞 |
 |  10 | SCKEY              |               | 通知渠道ServerChan |
-|  11 | CRON_HEALTH_CHECK  | 18 * * * *    | 健康检查的cron，在docker-cli中请用一对双引号引起来，在docker-compose中不用 |
-|  12 | CRON_AUTO_CATEGORY | 38 * * * *    | 自动分类的cron，在docker-cli中请用一对双引号引起来，在docker-compose中不用 |
+|  11 | CRON_HEALTH_CHECK  | 18 * * * *    | 健康检查的cron，在docker cli中请用一对双引号引起来，在docker-compose中不要增加引号 |
+|  12 | CRON_AUTO_CATEGORY | 38 * * * *    | 自动分类的cron，在docker cli中请用一对双引号引起来，在docker-compose中不要增加引号 |
 
 ## 目录说明
 
@@ -84,3 +84,13 @@ services:
 |  8  | torrents  | 保存种子文件目录，默认在配置未启用 |
 |  9  | watch     | 监控.torrent文件并自动下载，默认在配置未启用 |
 |  10 | webui     | 存放其他webui文件的目录，需要自己存放，默认在配置未启用 |
+
+## Dockerfile
+
+Dockerfile: https://github.com/nevinen/dockerfiles/blob/master/qbittorrent/Dockerfile
+
+参考了这个项目：https://github.com/crazy-max/docker-qbittorrent
+
+## 问题反馈
+
+请在 [这里](https://github.com/nevinen/dockerfiles/issues) 提交。

@@ -1,3 +1,5 @@
+## 修改自：https://github.com/crazy-max/docker-qbittorrent/blob/master/Dockerfile
+
 ARG LIBTORRENT_VERSION=1.2.13
 ARG QBITTORRENT_VERSION=4.3.5
 

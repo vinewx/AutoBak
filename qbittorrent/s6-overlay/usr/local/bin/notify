@@ -6,7 +6,7 @@ notify_dingding_bot () {
     local dd_api_url_base=https://oapi.dingtalk.com/robot/send
     local timestamp sign dd_api_url send_result err_code err_message
 
-    timestamp=$(date -u "+%s%3N")
+    timestamp=$(date -u "+%s000")
     sign=$(echo -ne "$timestamp\n$DD_BOT_SECRET" | openssl dgst -sha256 -hmac "$DD_BOT_SECRET" -binary | openssl base64)
     dd_api_url="$dd_api_url_base?access_token=${DD_BOT_TOKEN}&timestamp=${timestamp}&sign=${sign}"
     send_result=$(curl -Ss -H "Content-Type:application/json" -X POST -d "$message" "$dd_api_url")

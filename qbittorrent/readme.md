@@ -4,11 +4,13 @@
 - 下载完成发送通知，可选途径：钉钉, Telegram, ServerChan, 爱语飞飞；
 - 故障时发送通知，可选途径同上；
 - 日志输出到docker控制台，可从portainer查看；
-- 集成了`python`。
+- 集成了`python`；
+- 即使集成了`python`，体积仍然很小；
+- 多标签可用，其中`latest` `4` `4.x` `4.x.x`是多平台标签，可用平台：`amd64` `arm/v7` `arm64`，其他标签均为单平台标签。
 
 ## 创建
 
-1. docker-cli
+1. docker cli
 
 ```
 docker run -dit \
@@ -59,12 +61,12 @@ services:
 |  2  | PGID               | 1500          | 用户的gid，以该用户运行qbittorrent-nox |
 |  3  | TZ                 | Asia/Shanghai | 时区 |
 |  4  | UMASK_SET          | 000           | umask|
-|  5  | TG_USER_ID         |               | 通知渠道telegram，如需使用需要和TG_BOT_TOKEN同时赋值，私聊@getuseridbot获取 |
-|  6  | TG_BOT_TOKEN       |               | 通知渠道telegram，如需使用需要和TG_USER_ID同时赋值，私聊@BotFather获取 |
-|  7  | DD_BOT_TOKEN       |               | 通知渠道钉钉，如需使用需要和DD_BOT_SECRET同时赋值 |
-|  8  | DD_BOT_SECRET      |               | 通知渠道钉钉，如需使用需要和DD_BOT_TOKEN同时赋值 |
-|  9  | IYUU_TOKEN         |               | 通知渠道爱语飞飞 |
-|  10 | SCKEY              |               | 通知渠道ServerChan |
+|  5  | TG_USER_ID         |               | 通知渠道telegram，如需使用需要和 TG_BOT_TOKEN 同时赋值，私聊 @getuseridbot 获取 |
+|  6  | TG_BOT_TOKEN       |               | 通知渠道telegram，如需使用需要和 TG_USER_ID 同时赋值，私聊 @BotFather 获取 |
+|  7  | DD_BOT_TOKEN       |               | 通知渠道钉钉，如需使用需要和 DD_BOT_SECRET 同时赋值，机器人设置中webhook链接`access_token=`后面的字符串 |
+|  8  | DD_BOT_SECRET      |               | 通知渠道钉钉，如需使用需要和 DD_BOT_TOKEN 同时赋值，机器人设置中启用`加签`，加签的秘钥，形如：`SEC1234567890abcdefg` |
+|  9  | IYUU_TOKEN         |               | 通知渠道爱语飞飞，通过 http://iyuu.cn/ 获取 |
+|  10 | SCKEY              |               | 通知渠道ServerChan，通过 http://sc.ftqq.com/3.version 获取 |
 |  11 | CRON_HEALTH_CHECK  | 18 * * * *    | 健康检查的cron，在docker cli中请用一对双引号引起来，在docker-compose中不要增加引号 |
 |  12 | CRON_AUTO_CATEGORY | 38 * * * *    | 自动分类的cron，在docker cli中请用一对双引号引起来，在docker-compose中不要增加引号 |
 

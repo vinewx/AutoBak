@@ -28,9 +28,9 @@ category_all() {
 
 usage() {
     echo "用法："
-    echo "$0 -a        # 将所有种子按tracker分类"
-    echo "$0 -h        # 使用帮助"
-    echo "$0 -i <hash> # 指定某个种子的hash，将其按tracker分类"
+    echo "auto-cat -a        # 将所有种子按tracker分类"
+    echo "auto-cat -h        # 使用帮助"
+    echo "auto-cat -i <hash> # 指定某个种子的hash，将其按tracker分类"
 }
 
 main() {

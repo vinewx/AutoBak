@@ -8,6 +8,9 @@ base_fun() {
 category_one() {
     local torrent_hash="$1"
     local tracker=$($cmd_curl ${api_url_base}/torrents/trackers?hash=${torrent_hash} | jq -r .[].url | grep -m1 -i "http" | awk -F "://|/" '{print $2}' | awk -F "." '{print $((NF - 1))}')
+    if [[ $tracker == edu ]]; then
+        tracker=$($cmd_curl ${api_url_base}/torrents/trackers?hash=${torrent_hash} | jq -r .[].url | grep -m1 -i "http" | awk -F "://|/" '{print $2}' | awk -F "." '{print $((NF - 2))}')
+    fi
     local category=$($cmd_curl ${api_url_base}/torrents/info?hashes=${torrent_hash} | jq -r .[].category | sed "s# #%20#g")
 
     if [[ -z $(echo ${categories[@]} | grep -wo "$tracker") ]]; then

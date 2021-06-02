@@ -52,6 +52,38 @@ services:
       - 34567:34567/udp  # 冒号左右一致，必须同BT_PORT
 ```
 
+如若想将qbittorrent建立在已经创建好的macvlan网络上，可以按如下方式创建：
+
+```
+version: "2.0"
+services:
+  qbittorrent:
+    image: nevinee/qbittorrent
+    container_name: qbittorrent
+    restart: always
+    tty: true
+    networks: 
+      <你的macvlan网络名称>:
+        ipv4_address: <你想设置的ip>
+        aliases:
+          - qbittorrent
+    hostname: qbitorrent
+    volumes:
+      - ./data:/data
+    environment:
+      - WEBUI_PORT=8080   # WEBUI控制端口，可自定义
+      - BT_PORT=34567     # BT监听端口，可自定义
+      - TZ=Asia/Shanghai  # 时区
+    ports:
+      - 8080:8080        # 冒号左右一致，必须同WEBUI_PORT
+      - 34567:34567      # 冒号左右一致，必须同BT_PORT
+      - 34567:34567/udp  # 冒号左右一致，必须同BT_PORT
+
+networks: 
+  <你的macvlan网络名称>:
+    external: true
+```
+
 ## 环境变量清单
 
 在创建命令中，包括已经提及的`WEBUI_PORT`, `BT_PORT`, `TZ`在内，总共以下环境变量，请根据需要自行添加到创建命令中：

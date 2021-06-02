@@ -27,7 +27,7 @@ change_tag() {
         $cmd_curl_post -d "hashes=${hash}&tags=${tag_name}" ${api_url_base}/torrents/addTags
     elif [[ $add_tag_mark == no ]]; then
         for ((n = 0; n < ${#tags[*]}; n++)); do
-            if [[ ${tags[n]} == $tag_name ]]; then
+            if [[ ${tags[n]} == \"$tag_name\" ]]; then
                 $cmd_curl_post -d "hashes=${hash}&tags=${tag_name}" ${api_url_base}/torrents/removeTags
             fi
         done

@@ -105,9 +105,19 @@ services:
 
 - 进入原来容器的映射目录下，在config下分别找到`qBittorrent.conf` `qBittorrent-data.conf` `rss`，在data下找到`BT_backup`，然后将其参考上面的目录树放在容器映射目录下，然后在创建容器时，保证新容器中的下载文件的保存路径和旧容器一致，并新建容器即可。
 
-- 举例说明如何保证新容器中的下载文件的保存路径和旧容器一致，比如旧容器中下载了一个 `xxx.2020.BluRay.1080p.x264.DTS-XXX`，保存路径为`/movies`（宿主机上的真实路径为`/volume1/home/id/movies），那么在新建新容器时，给新容器增加一个路径映射：`-v /volume1/home/id/movies:/movies`　即可。
+- 举例说明如何保证新容器中的下载文件的保存路径和旧容器一致，比如旧容器中下载了一个 `xxx.2020.BluRay.1080p.x264.DTS-XXX`，保存路径为`/movies`（宿主机上的真实路径为`/volume1/home/id/movies`），那么在新建新容器时，给新容器增加一个路径映射：`-v /volume1/home/id/movies:/movies`　即可。
 
 - 注意新容器和旧容器映射路径的权限保持一致。
+
+**遗忘登陆密码，如何重置**
+
+```
+# 如果启用了ssl
+docker exec qbittorrent curl -k -X POST -d 'json={"web_ui_username":"新的用户名","web_ui_password":"新的密码"}'　https://127.0.0.1:${WEBUI_PORT}/api/v2/app/setPreferences
+
+# 如果未启用ssl
+docker exec qbittorrent curl -X POST -d 'json={"web_ui_username":"新的用户名","web_ui_password":"新的密码"}'　http://127.0.0.1:${WEBUI_PORT}/api/v2/app/setPreferences
+```
 
 ## 命令
 

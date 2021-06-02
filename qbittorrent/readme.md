@@ -6,6 +6,7 @@
 - 日志输出到docker控制台，可从portainer查看；
 - 集成了`python`；
 - 即使集成了`python`，体积仍然很小；
+- 每两小时检查一下tracker状态，如发现种子的tracker状态有问题，将给该种子添加`TrackerError`的标签，方便筛选；
 - 多标签可用，其中`latest` `4` `4.x` `4.x.x`是多平台标签，可用平台：`amd64` `arm/v7` `arm64`，其他标签均为单平台标签。
 
 ## 创建
@@ -14,10 +15,10 @@
 
 ```
 docker run -dit \
-  -v $PWD/data:/data \
+  -v $PWD/qbittorrent:/data \
   -e TZ="Asia/Shanghai" \
-  -e WEBUI_PORT=8080 `# WEBUI控制端口，可自定义`\
-  -e BT_PORT=34567   `# BT监听端口，可自定义`\
+  -e WEBUI_PORT=8080 `# WEBUI控制端口，可自定义` \
+  -e BT_PORT=34567   `# BT监听端口，可自定义` \
   -p 8080:8080       `# 冒号左右一致，要同WEBUI_PORT` \
   -p 34567:34567/tcp `# 冒号左右一致，要同BT_PORT` \
   -p 34567:34567/udp `# 冒号左右一致，要同BT_PORT` \
@@ -67,31 +68,83 @@ services:
 |  8  | DD_BOT_SECRET      |               | 通知渠道钉钉，如需使用需要和 DD_BOT_TOKEN 同时赋值，机器人设置中启用`加签`，加签的秘钥，形如：`SEC1234567890abcdefg` |
 |  9  | IYUU_TOKEN         |               | 通知渠道爱语飞飞，通过 http://iyuu.cn/ 获取 |
 |  10 | SCKEY              |               | 通知渠道ServerChan，通过 http://sc.ftqq.com/3.version 获取 |
-|  11 | CRON_HEALTH_CHECK  | 18 * * * *    | 健康检查的cron，在docker cli中请用一对双引号引起来，在docker-compose中不要增加引号 |
-|  12 | CRON_AUTO_CATEGORY | 38 * * * *    | 自动分类的cron，在docker cli中请用一对双引号引起来，在docker-compose中不要增加引号 |
+|  11 | CRON_HEALTH_CHECK  | 18 * * * *    | 健康检查的cron，在设定的cron运行时如发现qbittorrent宕机了，则向设置的通知渠道发送通知，在docker cli中请用一对双引号引起来，在docker-compose中不要增加引号 |
+|  12 | CRON_AUTO_CATEGORY | 38 * * * *    | 自动分类的cron，在设定的cron将所有种子按tracker分类，在docker cli中请用一对双引号引起来，在docker-compose中不要增加引号 |
 
 ## 目录说明
 
 只需要映射一个目录给容器（当然你要映射其他目录作为下载目录也没有问题），在映射的容器内的`/data`文件夹下会有以下文件夹：
 
-| 序号 | 目录名    | 用途        |
-| :-: | :-:       | -           |
-|  1  | cache     | qbittorrent的缓存目录 |
-|  2  | certs     | 用来存放ssl证书，默认是空的 |
-|  3  | config    | qbittorrent的配置文件保存目录 |
-|  4  | data      | qbittorrent的数据保存目录 |
-|  5  | downloads | 默认下载目录 |
-|  6  | logs      | 只是个软连接，连接到容器内的`/data/data/logs` |
-|  7  | temp      | 下载文件临时存放目录，默认在配置中未启用 |
-|  8  | torrents  | 保存种子文件目录，默认在配置未启用 |
-|  9  | watch     | 监控.torrent文件并自动下载，默认在配置未启用 |
-|  10 | webui     | 存放其他webui文件的目录，需要自己存放，默认在配置未启用 |
+```
+/data
+├── cache                     # qbittorrent的缓存目录
+├── certs                     # 用来存放ssl证书，默认是空的，可另外使用acme.sh来申请ssl证书
+├── config                    # 所有的配置文件保存目录
+│   ├── qBittorrent.conf      # **配置文件，很重要，如需恢复配置此文件必须保留**
+│   ├── qBittorrent-data.conf # **上传下载数据统计文件，如需恢复配置此文件必须保留**
+│   └── rss                   # **rss的配置文件保存目录，如需恢复配置此文件必须保留**
+├── data                      # 所有的数据文件保存目录
+│   ├── BT_backup             # **torrent的快速恢复文件保存目录，如需恢复做种数据此目录必须保留**
+│   ├── GeoDB                 # IP数据保存目录
+│   ├── logs                  # 日志文件保存目录
+│   ├── nova3                 # 启用qBittorrent搜索功能后相关文件保存目录
+│   └── rss                   # rss订阅下载文件保存目录
+├── downloads                 # 默认下载目录
+├── logs -> data/logs         # 只是个软连接，连接到容器内的/data/data/logs
+├── temp                      # 下载文件临时存放目录，默认在配置中未启用
+├── torrents                  # 保存种子文件目录，默认在配置中未启用
+├── watch                     # 监控目录，监控这个目录下的.torrent文件并自动下载，默认在配置中未启用
+└── webui                     # 存放其他webui文件的目录，需要自己存放，默认在配置中未启用
+```
 
-## Dockerfile
+*有两个星号标记的文件或目录是重要目录，恢复数据必须要有这几个。*
 
-Dockerfile: https://github.com/nevinen/dockerfiles/blob/master/qbittorrent/Dockerfile
+## 相关问题
 
-参考了这个项目：https://github.com/crazy-max/docker-qbittorrent
+**如何从其他作者的镜像转移至本镜像？**
+
+- 进入原来容器的映射目录下，在config下分别找到`qBittorrent.conf` `qBittorrent-data.conf` `rss`，在data下找到`BT_backup`，然后将其参考上面的目录树放在容器映射目录下，然后在创建容器时，保证新容器中的下载文件的保存路径和旧容器一致，并新建容器即可。
+
+- 举例说明如何保证新容器中的下载文件的保存路径和旧容器一致，比如旧容器中下载了一个 `xxx.2020.BluRay.1080p.x264.DTS-XXX`，保存路径为`/movies`（宿主机上的真实路径为`/volume1/home/id/movies），那么在新建新容器时，给新容器增加一个路径映射：`-v /volume1/home/id/movies:/movies`　即可。
+
+- 注意新容器和旧容器映射路径的权限保持一致。
+
+## 命令
+
+```
+# 发送通知
+docker exec qbittorrent notify "测试消息标题" "测试消息通知内容"
+
+# 将所有种子按tracker进行分类，cron会自动每小时运行一次
+docker exec qbittorrent auto-cat -a
+
+# 将指定种子按tracker进行分类，会自动在下载完成时运行一次
+docker exec qbittorrent auto-cat -i <hash>   # hash可以在种子详情中的"普通"标签页上查看到
+
+# 下载完成时将种子分类，并发送通知，已经在配置文件中填好了
+docker exec qbittorrent dl-finish <hash>     # hash可以在种子详情中的"普通"标签页上查看到
+
+# 检查qbittorrent是否宕机，如宕机则发送通知，容器本身也会按设置的cron来运行此命令
+docker exec qbittorrent health-check
+
+# 检查所有种子的tracker状态是否有问题，如有问题，给该种子添加一个 TrackerError 的标签，容器本身也会每两小时跑一次
+docker exec qbittorrent tracker-error
+
+# 查看qbittorrent日志，也可以直接在portainer控制台中看到
+docker logs -f qbittorrent
+```
+
+## 说明
+
+- [Dockerfile](https://github.com/nevinen/dockerfiles/blob/master/qbittorrent/Dockerfile)
+
+- 参考：
+
+  + [crazy-max/docker-qbittorrent](https://hub.docker.com/r/crazy-max/docker-qbittorrent) , 参考了Dockerfile; 
+  
+  + [80x86/qbittorrent](https://hub.docker.com/r/80x86/qbittorrent), 借鉴了标签和分类的理念，正因为此镜像源码未公开，且长期不更新，并且集成acme会和acme本身的项目重复，这才催生我重写代码；
+
+  + [arpaulnet/s6-overlay-stage](https://hub.docker.com/r/arpaulnet/s6-overlay-stage), 学习了多平台镜像制作方法。
 
 ## 问题反馈
 

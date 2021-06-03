@@ -6,7 +6,7 @@
 - 日志输出到docker控制台，可从portainer查看；
 - 集成了`python`；
 - 即使集成了`python`，体积仍然很小；
-- 每两小时检查一下tracker状态，如发现种子的tracker状态有问题，将给该种子添加`TrackerError`的标签，方便筛选；
+- 每4小时检查一下tracker状态，如发现种子的tracker状态有问题，将给该种子添加`TrackerError`的标签，方便筛选；
 - 多标签可用，其中`latest` `4` `4.x` `4.x.x`是多平台标签，可用平台：`amd64` `arm/v7` `arm64`，其他标签均为单平台标签。
 
 ## 创建
@@ -27,6 +27,8 @@ docker run -dit \
   --hostname qbittorrent \
   nevinee/qbittorrent
 ```
+
+armv7设备如若无法使用网络，可能是seccomp问题，详见 [这里](https://wiki.alpinelinux.org/wiki/Release_Notes_for_Alpine_3.13.0#time64_requirements)。可以增加`--security-opt seccomp=unconfined` 来解决。
 
 2. docker-compose
 
@@ -74,14 +76,17 @@ services:
       - WEBUI_PORT=8080   # WEBUI控制端口，可自定义
       - BT_PORT=34567     # BT监听端口，可自定义
       - TZ=Asia/Shanghai  # 时区
-    ports:
-      - 8080:8080        # 冒号左右一致，必须同WEBUI_PORT
-      - 34567:34567      # 冒号左右一致，必须同BT_PORT
-      - 34567:34567/udp  # 冒号左右一致，必须同BT_PORT
 
 networks: 
   <你的macvlan网络名称>:
     external: true
+```
+
+armv7设备如若无法使用网络，可能是seccomp问题，详见 [这里](https://wiki.alpinelinux.org/wiki/Release_Notes_for_Alpine_3.13.0#time64_requirements)。可以在docker-compose.yml中增加以下内容来解决：
+
+```
+    security_opt:
+      - seccomp=unconfined
 ```
 
 ## 环境变量清单
@@ -90,18 +95,20 @@ networks:
 
 | 序号 | 变量名              | 默认值        | 说明 |
 | :-: | :-:                | :-:           | -    |
-|  1  | PUID               | 1500          | 用户的uid，以该用户运行qbittorrent-nox |
-|  2  | PGID               | 1500          | 用户的gid，以该用户运行qbittorrent-nox |
+|  1  | PUID               | 1500          | 用户的uid，以该用户运行qbittorrent-nox。 |
+|  2  | PGID               | 1500          | 用户的gid，以该用户运行qbittorrent-nox。 |
 |  3  | TZ                 | Asia/Shanghai | 时区 |
 |  4  | UMASK_SET          | 000           | umask|
-|  5  | TG_USER_ID         |               | 通知渠道telegram，如需使用需要和 TG_BOT_TOKEN 同时赋值，私聊 @getuseridbot 获取 |
-|  6  | TG_BOT_TOKEN       |               | 通知渠道telegram，如需使用需要和 TG_USER_ID 同时赋值，私聊 @BotFather 获取 |
-|  7  | DD_BOT_TOKEN       |               | 通知渠道钉钉，如需使用需要和 DD_BOT_SECRET 同时赋值，机器人设置中webhook链接`access_token=`后面的字符串 |
-|  8  | DD_BOT_SECRET      |               | 通知渠道钉钉，如需使用需要和 DD_BOT_TOKEN 同时赋值，机器人设置中启用`加签`，加签的秘钥，形如：`SEC1234567890abcdefg` |
-|  9  | IYUU_TOKEN         |               | 通知渠道爱语飞飞，通过 http://iyuu.cn/ 获取 |
-|  10 | SCKEY              |               | 通知渠道ServerChan，通过 http://sc.ftqq.com/3.version 获取 |
-|  11 | CRON_HEALTH_CHECK  | 18 * * * *    | 健康检查的cron，在设定的cron运行时如发现qbittorrent宕机了，则向设置的通知渠道发送通知，在docker cli中请用一对双引号引起来，在docker-compose中不要增加引号 |
-|  12 | CRON_AUTO_CATEGORY | 38 * * * *    | 自动分类的cron，在设定的cron将所有种子按tracker分类，在docker cli中请用一对双引号引起来，在docker-compose中不要增加引号 |
+|  5  | TG_USER_ID         |               | 通知渠道telegram，如需使用需要和 TG_BOT_TOKEN 同时赋值，私聊 @getuseridbot 获取。 |
+|  6  | TG_BOT_TOKEN       |               | 通知渠道telegram，如需使用需要和 TG_USER_ID 同时赋值，私聊 @BotFather 获取。 |
+|  7  | DD_BOT_TOKEN       |               | 通知渠道钉钉，如需使用需要和 DD_BOT_SECRET 同时赋值，机器人设置中webhook链接`access_token=`后面的字符串。 |
+|  8  | DD_BOT_SECRET      |               | 通知渠道钉钉，如需使用需要和 DD_BOT_TOKEN 同时赋值，机器人设置中启用`加签`，加签的秘钥，形如：`SEC1234567890abcdefg`。 |
+|  9  | IYUU_TOKEN         |               | 通知渠道爱语飞飞，通过 http://iyuu.cn/ 获取。 |
+|  10 | SCKEY              |               | 通知渠道ServerChan，通过 http://sc.ftqq.com/3.version 获取。 |
+|  11 | CRON_HEALTH_CHECK  | 12 * * * *    | 宕机检查的cron，在设定的cron运行时如发现qbittorrent-nox宕机了，则向设置的通知渠道发送通知，在docker cli中请用一对双引号引起来，在docker-compose中不要增加引号。 |
+|  12 | CRON_AUTO_CATEGORY | 32 */2 * * *  | 自动分类的cron，在设定的cron将所有种子按tracker分类，在docker cli中请用一对双引号引起来，在docker-compose中不要增加引号。对于种子很多的大户人家，建议把cron频率修改低一些，一天一次即可。 |
+|  13 | CRON_TRACKER_ERROR | 52 */4 * * *  | 检查tracker状态是否健康的cron，在设定的cron将检查所有种子的tracker状态，如果有问题就打上`TrackerError`的标签，在docker cli中请用一对双引号引起来，在docker-compose中不要增加引号。对于种子很多的大户人家，建议把cron频率修改低一些，一天一次即可。 |
+|  14 | DL_FINISH_NOTIFY   | true          | 默认会在下载完成时向设定的通知渠道发送种子下载完成的通知消息，如不想收此类通知，则输入`false` |
 
 ## 目录说明
 
@@ -161,7 +168,7 @@ docker exec qbittorrent curl -X POST -d 'json={"web_ui_username":"新的用户�
 # 发送通知
 docker exec qbittorrent notify "测试消息标题" "测试消息通知内容"
 
-# 将所有种子按tracker进行分类，cron会自动每小时运行一次
+# 将所有种子按tracker进行分类，cron（CRON_AUTO_CATEGORY）如未修改会自动每两小时运行一次
 docker exec qbittorrent auto-cat -a
 
 # 将指定种子按tracker进行分类，会自动在下载完成时运行一次
@@ -170,10 +177,10 @@ docker exec qbittorrent auto-cat -i <hash>   # hash可以在种子详情中的"�
 # 下载完成时将种子分类，并发送通知，已经在配置文件中填好了
 docker exec qbittorrent dl-finish <hash>     # hash可以在种子详情中的"普通"标签页上查看到
 
-# 检查qbittorrent是否宕机，如宕机则发送通知，容器本身也会按设置的cron来运行此命令
+# 检查qbittorrent是否宕机，如宕机则发送通知，容器本身也会按设置的cron（CRON_HEALTH_CHECK）来运行此命令
 docker exec qbittorrent health-check
 
-# 检查所有种子的tracker状态是否有问题，如有问题，给该种子添加一个 TrackerError 的标签，容器本身也会每两小时跑一次
+# 检查所有种子的tracker状态是否有问题，如有问题，给该种子添加一个 TrackerError 的标签，如未修改CRON_TRACKER_ERROR，则会每4小时跑一次
 docker exec qbittorrent tracker-error
 
 # 查看qbittorrent日志，也可以直接在portainer控制台中看到

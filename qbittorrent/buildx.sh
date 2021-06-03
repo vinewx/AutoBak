@@ -29,6 +29,7 @@ MAJOR_SEMVER=$(printf "${RELEASE_SEMVER}" | cut -d '.' -f 1)
 declare -a IMAGES
 
 ## 构建amd64
+echo "buildx amd64"
 docker buildx build \
     --cache-from "type=local,src=/tmp/.buildx-cache" \
     --cache-to "type=local,dest=/tmp/.buildx-cache" \
@@ -47,6 +48,7 @@ docker buildx build \
 IMAGES+=( "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-amd64" )
 
 ## 构建arm/v7
+echo "buildx arm/v7"
 docker buildx build \
     --cache-from "type=local,src=/tmp/.buildx-cache" \
     --cache-to "type=local,dest=/tmp/.buildx-cache" \
@@ -65,6 +67,7 @@ docker buildx build \
 IMAGES+=( "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm-v7" )
 
 ## 构建arm64/v8
+echo "buildx arm64/v8"
 docker buildx build \
     --cache-from "type=local,src=/tmp/.buildx-cache" \
     --cache-to "type=local,dest=/tmp/.buildx-cache" \

@@ -27,7 +27,7 @@ else
     torrent_hash="$1"
     echo "(N) $(date +'%Y-%m-%dT%H:%M:%S') - [$(basename $0)] 将刚下载完成的种子进行分类..."
     auto-cat -i "$torrent_hash"
-    if [[ $DL_FINISH_NOTIFY == true ]]; then
+    if [[ $DL_FINISH_NOTIFY != false ]]; then
         echo "(N) $(date +'%Y-%m-%dT%H:%M:%S') - [$(basename $0)] 发送种子下载完成的通知消息..."
         send_notify "$torrent_hash"
     else

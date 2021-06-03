@@ -151,6 +151,10 @@ docker exec qbittorrent curl -k -X POST -d 'json={"web_ui_username":"新的用�
 docker exec qbittorrent curl -X POST -d 'json={"web_ui_username":"新的用户名","web_ui_password":"新的密码"}'　http://127.0.0.1:${WEBUI_PORT}/api/v2/app/setPreferences
 ```
 
+**如何与emby, jellyfin, plex等等配合使用**
+
+将需要配合使用的容器的环境变量PUID/PGID设置为一样的即可。
+
 ## 命令
 
 ```
@@ -182,7 +186,7 @@ docker logs -f qbittorrent
 
 - 参考：
 
-  + [crazy-max/docker-qbittorrent](https://hub.docker.com/r/crazy-max/docker-qbittorrent) , 参考了Dockerfile; 
+  + [crazymax/qbittorrent](https://hub.docker.com/r/crazymax/qbittorrent) , 参考了Dockerfile; 
   
   + [80x86/qbittorrent](https://hub.docker.com/r/80x86/qbittorrent), 借鉴了标签和分类的理念，正因为此镜像源码未公开，且长期不更新，并且集成acme会和acme本身的项目重复，这才催生我重写代码；
 

@@ -138,6 +138,8 @@ armv7设备如若无法使用网络，可能是seccomp问题，详见 [这里](h
 
 *有两个星号标记的文件或目录是重要目录，恢复数据必须要有这几个。*
 
+*在这里可以查阅所有可用的非官方webui：https://github.com/qbittorrent/qBittorrent/wiki/List-of-known-alternate-WebUIs*
+
 ## 相关问题
 
 **如何从其他作者的镜像转移至本镜像？**
@@ -161,6 +163,16 @@ docker exec qbittorrent curl -X POST -d 'json={"web_ui_username":"新的用户�
 **如何与emby, jellyfin, plex等等配合使用**
 
 将需要配合使用的容器的环境变量PUID/PGID设置为一样的即可。
+
+**启用了其他非官方webui，导致webui打不开，如何关闭**
+
+```
+# 如果启用了ssl
+docker exec qbittorrent curl -k -X POST -d 'json={"alternative_webui_enabled":"false"}'　https://127.0.0.1:${WEBUI_PORT}/api/v2/app/setPreferences
+
+# 如果未启用ssl
+docker exec qbittorrent curl -X POST -d 'json={"alternative_webui_enabled":"false"}'　http://127.0.0.1:${WEBUI_PORT}/api/v2/app/setPreferences
+```
 
 ## 命令
 

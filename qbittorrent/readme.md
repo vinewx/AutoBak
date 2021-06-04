@@ -92,7 +92,7 @@ armv7设备如若无法使用网络，可能是seccomp问题，详见 [这里](h
 
 ## 环境变量清单
 
-在创建命令中，包括已经提及的`WEBUI_PORT`, `BT_PORT`, `TZ`在内，总共以下环境变量，请根据需要自行添加到创建命令中：
+在创建命令中，包括已经提及的`WEBUI_PORT`, `BT_PORT`, `TZ`在内，总共以下环境变量，请根据需要参考创建命令中`WEBUI_PORT` `BT_PORT` `TZ`的形式自行补充添加到创建命令中：
 
 | 序号 | 变量名              | 默认值        | 说明 |
 | :-: | :-:                | :-:           | -    |
@@ -143,7 +143,13 @@ armv7设备如若无法使用网络，可能是seccomp问题，详见 [这里](h
 
 ## 相关问题
 
+**如何优雅的关闭qbittorrent容器**
+
+暴力强制关闭qbittorrent容器自然是容易丢失任务的，所以在关闭前应当先将所有种子暂停，过一会再关闭容器。这时，所有的配置文件和torrent恢复文件也都是暂停后的状态，然后再新建容器或重新部署，启动后再开始所有任务。
+
 **如何从其他作者的镜像转移至本镜像？**
+
+- 请注意要优雅的关闭旧容器后再处理配置文件。
 
 - 进入原来容器的映射目录下，在config下分别找到`qBittorrent.conf` `qBittorrent-data.conf` `rss`，在data下找到`BT_backup`，然后将其参考上面的目录树放在新容器的映射目录下，然后在创建容器时，保证新容器中的下载文件的保存路径和旧容器一致，并新建容器即可。
 
@@ -155,10 +161,10 @@ armv7设备如若无法使用网络，可能是seccomp问题，详见 [这里](h
 
 ```
 # 如果启用了ssl
-docker exec qbittorrent curl -k -X POST -d 'json={"web_ui_username":"新的用户名","web_ui_password":"新的密码"}'　https://127.0.0.1:${WEBUI_PORT}/api/v2/app/setPreferences
+docker exec qbittorrent curl -k -X POST -d 'json={"web_ui_username":"新的用户名","web_ui_password":"新的密码"}' https://127.0.0.1:${WEBUI_PORT}/api/v2/app/setPreferences
 
 # 如果未启用ssl
-docker exec qbittorrent curl -X POST -d 'json={"web_ui_username":"新的用户名","web_ui_password":"新的密码"}'　http://127.0.0.1:${WEBUI_PORT}/api/v2/app/setPreferences
+docker exec qbittorrent curl -X POST -d 'json={"web_ui_username":"新的用户名","web_ui_password":"新的密码"}' http://127.0.0.1:${WEBUI_PORT}/api/v2/app/setPreferences
 ```
 
 **如何与emby, jellyfin, plex等等配合使用**
@@ -169,10 +175,10 @@ docker exec qbittorrent curl -X POST -d 'json={"web_ui_username":"新的用户�
 
 ```
 # 如果启用了ssl
-docker exec qbittorrent curl -k -X POST -d 'json={"alternative_webui_enabled":false}'　https://127.0.0.1:${WEBUI_PORT}/api/v2/app/setPreferences
+docker exec qbittorrent curl -k -X POST -d 'json={"alternative_webui_enabled":false}' https://127.0.0.1:${WEBUI_PORT}/api/v2/app/setPreferences
 
 # 如果未启用ssl
-docker exec qbittorrent curl -X POST -d 'json={"alternative_webui_enabled":false}'　http://127.0.0.1:${WEBUI_PORT}/api/v2/app/setPreferences
+docker exec qbittorrent curl -X POST -d 'json={"alternative_webui_enabled":false}' http://127.0.0.1:${WEBUI_PORT}/api/v2/app/setPreferences
 ```
 
 ## 命令

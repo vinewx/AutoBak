@@ -28,65 +28,82 @@ MINOR_SEMVER=$(printf "${RELEASE_SEMVER}" | cut -d '.' -f 1-2)
 MAJOR_SEMVER=$(printf "${RELEASE_SEMVER}" | cut -d '.' -f 1)
 declare -a IMAGES
 
-## 构建时出错自动退出
-set -e
-
 ## 构建amd64
-echo "buildx amd64"
-docker buildx build \
-    --cache-from "type=local,src=/tmp/.buildx-cache" \
-    --cache-to "type=local,dest=/tmp/.buildx-cache" \
-    --output "type=image,push=true" \
-    --platform linux/amd64 \
-    --build-arg "QBITTORRENT_VERSION=${QB_FULL_VERSION}" \
-    --build-arg "LIBTORRENT_VERSION=${LIBTORRENT_FULL_VERSION}" \
-    --tag "${DOCKERHUB_REPOSITORY}:latest-amd64" \
-    --tag "${DOCKERHUB_REPOSITORY}:${MAJOR_SEMVER}-amd64" \
-    --tag "${DOCKERHUB_REPOSITORY}:${MINOR_SEMVER}-amd64" \
-    --tag "${DOCKERHUB_REPOSITORY}:${PATCH_SEMVER}-amd64" \
-    --tag "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-amd64" \
-    -f Dockerfile \
-    .
-    
-IMAGES+=( "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-amd64" )
+buildx_amd64() {
+    echo "buildx amd64"
+    docker buildx build \
+        --cache-from "type=local,src=/tmp/.buildx-cache" \
+        --cache-to "type=local,dest=/tmp/.buildx-cache" \
+        --output "type=image,push=true" \
+        --platform linux/amd64 \
+        --build-arg "QBITTORRENT_VERSION=${QB_FULL_VERSION}" \
+        --build-arg "LIBTORRENT_VERSION=${LIBTORRENT_FULL_VERSION}" \
+        --tag "${DOCKERHUB_REPOSITORY}:latest-amd64" \
+        --tag "${DOCKERHUB_REPOSITORY}:${MAJOR_SEMVER}-amd64" \
+        --tag "${DOCKERHUB_REPOSITORY}:${MINOR_SEMVER}-amd64" \
+        --tag "${DOCKERHUB_REPOSITORY}:${PATCH_SEMVER}-amd64" \
+        --tag "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-amd64" \
+        -f Dockerfile \
+        .
+        
+    IMAGES+=( "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-amd64" )
+}
 
 ## 构建arm/v7
-echo "buildx arm/v7"
-docker buildx build \
-    --cache-from "type=local,src=/tmp/.buildx-cache" \
-    --cache-to "type=local,dest=/tmp/.buildx-cache" \
-    --output "type=image,push=true" \
-    --platform linux/arm/v7 \
-    --build-arg "QBITTORRENT_VERSION=${QB_FULL_VERSION}" \
-    --build-arg "LIBTORRENT_VERSION=${LIBTORRENT_FULL_VERSION}" \
-    --tag "${DOCKERHUB_REPOSITORY}:latest-arm-v7" \
-    --tag "${DOCKERHUB_REPOSITORY}:${MAJOR_SEMVER}-arm-v7" \
-    --tag "${DOCKERHUB_REPOSITORY}:${MINOR_SEMVER}-arm-v7" \
-    --tag "${DOCKERHUB_REPOSITORY}:${PATCH_SEMVER}-arm-v7" \
-    --tag "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm-v7" \
-    -f Dockerfile \
-    .
+buildx_armv7() {
+    echo "buildx arm/v7"
+    docker buildx build \
+        --cache-from "type=local,src=/tmp/.buildx-cache" \
+        --cache-to "type=local,dest=/tmp/.buildx-cache" \
+        --output "type=image,push=true" \
+        --platform linux/arm/v7 \
+        --build-arg "QBITTORRENT_VERSION=${QB_FULL_VERSION}" \
+        --build-arg "LIBTORRENT_VERSION=${LIBTORRENT_FULL_VERSION}" \
+        --tag "${DOCKERHUB_REPOSITORY}:latest-arm-v7" \
+        --tag "${DOCKERHUB_REPOSITORY}:${MAJOR_SEMVER}-arm-v7" \
+        --tag "${DOCKERHUB_REPOSITORY}:${MINOR_SEMVER}-arm-v7" \
+        --tag "${DOCKERHUB_REPOSITORY}:${PATCH_SEMVER}-arm-v7" \
+        --tag "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm-v7" \
+        -f Dockerfile \
+        .
 
-IMAGES+=( "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm-v7" )
+    IMAGES+=( "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm-v7" )
+}
 
 ## 构建arm64/v8
-echo "buildx arm64/v8"
-docker buildx build \
-    --cache-from "type=local,src=/tmp/.buildx-cache" \
-    --cache-to "type=local,dest=/tmp/.buildx-cache" \
-    --output "type=image,push=true" \
-    --platform linux/arm64/v8 \
-    --build-arg "QBITTORRENT_VERSION=${QB_FULL_VERSION}" \
-    --build-arg "LIBTORRENT_VERSION=${LIBTORRENT_FULL_VERSION}" \
-    --tag "${DOCKERHUB_REPOSITORY}:latest-arm64-v8" \
-    --tag "${DOCKERHUB_REPOSITORY}:${MAJOR_SEMVER}-arm64-v8" \
-    --tag "${DOCKERHUB_REPOSITORY}:${MINOR_SEMVER}-arm64-v8" \
-    --tag "${DOCKERHUB_REPOSITORY}:${PATCH_SEMVER}-arm64-v8" \
-    --tag "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm64-v8" \
-    -f Dockerfile \
-    .
+buildx_arm64() {
+    echo "buildx arm64/v8"
+    docker buildx build \
+        --cache-from "type=local,src=/tmp/.buildx-cache" \
+        --cache-to "type=local,dest=/tmp/.buildx-cache" \
+        --output "type=image,push=true" \
+        --platform linux/arm64/v8 \
+        --build-arg "QBITTORRENT_VERSION=${QB_FULL_VERSION}" \
+        --build-arg "LIBTORRENT_VERSION=${LIBTORRENT_FULL_VERSION}" \
+        --tag "${DOCKERHUB_REPOSITORY}:latest-arm64-v8" \
+        --tag "${DOCKERHUB_REPOSITORY}:${MAJOR_SEMVER}-arm64-v8" \
+        --tag "${DOCKERHUB_REPOSITORY}:${MINOR_SEMVER}-arm64-v8" \
+        --tag "${DOCKERHUB_REPOSITORY}:${PATCH_SEMVER}-arm64-v8" \
+        --tag "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm64-v8" \
+        -f Dockerfile \
+        .
 
-IMAGES+=( "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm64-v8" )
+    IMAGES+=( "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm64-v8" )
+}
+
+## 本地构建容易出错，循环10次
+for ((i = 0; i <= 10; i++)); do
+    buildx_amd64
+    [[ $? -eq 0 ]] && break
+done
+for ((i = 0; i <= 10; i++)); do
+    buildx_armv7
+    [[ $? -eq 0 ]] && break
+done
+for ((i = 0; i <= 10; i++)); do
+    buildx_arm64
+    [[ $? -eq 0 ]] && break
+done
 
 ## 增加manifest
 docker manifest create "${DOCKERHUB_REPOSITORY}:latest" "${IMAGES[@]}"

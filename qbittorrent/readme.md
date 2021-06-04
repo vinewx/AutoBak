@@ -168,10 +168,10 @@ docker exec qbittorrent curl -X POST -d 'json={"web_ui_username":"新的用户�
 
 ```
 # 如果启用了ssl
-docker exec qbittorrent curl -k -X POST -d 'json={"alternative_webui_enabled":"false"}'　https://127.0.0.1:${WEBUI_PORT}/api/v2/app/setPreferences
+docker exec qbittorrent curl -k -X POST -d 'json={"alternative_webui_enabled":false}'　https://127.0.0.1:${WEBUI_PORT}/api/v2/app/setPreferences
 
 # 如果未启用ssl
-docker exec qbittorrent curl -X POST -d 'json={"alternative_webui_enabled":"false"}'　http://127.0.0.1:${WEBUI_PORT}/api/v2/app/setPreferences
+docker exec qbittorrent curl -X POST -d 'json={"alternative_webui_enabled":false}'　http://127.0.0.1:${WEBUI_PORT}/api/v2/app/setPreferences
 ```
 
 ## 命令

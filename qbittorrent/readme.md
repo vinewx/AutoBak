@@ -9,6 +9,8 @@
 - 每4小时检查一下tracker状态，如发现种子的tracker状态有问题，将给该种子添加`TrackerError`的标签，方便筛选；
 - 多标签可用，其中`latest` `4` `4.x` `4.x.x`是多平台标签，可用平台：`amd64` `arm/v7` `arm64`，其他标签均为单平台标签。
 
+[!效果图](notify.png)
+
 ## 创建
 
 1. docker cli

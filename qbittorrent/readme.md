@@ -8,8 +8,7 @@
 - 即使集成了`python`，体积仍然很小；
 - 每4小时检查一下tracker状态，如发现种子的tracker状态有问题，将给该种子添加`TrackerError`的标签，方便筛选；
 - 多标签可用，其中`latest` `4` `4.x` `4.x.x`是多平台标签，可用平台：`amd64` `arm/v7` `arm64`，其他标签均为单平台标签。
-
-![效果图](https://github.com/nevinen/dockerfiles/blob/master/qbittorrent/notify.png)
+- ![钉钉通知效果图](https://github.com/nevinen/dockerfiles/blob/master/qbittorrent/notify.png)
 
 ## 创建
 
@@ -146,9 +145,9 @@ armv7设备如若无法使用网络，可能是seccomp问题，详见 [这里](h
 
 **如何从其他作者的镜像转移至本镜像？**
 
-- 进入原来容器的映射目录下，在config下分别找到`qBittorrent.conf` `qBittorrent-data.conf` `rss`，在data下找到`BT_backup`，然后将其参考上面的目录树放在容器映射目录下，然后在创建容器时，保证新容器中的下载文件的保存路径和旧容器一致，并新建容器即可。
+- 进入原来容器的映射目录下，在config下分别找到`qBittorrent.conf` `qBittorrent-data.conf` `rss`，在data下找到`BT_backup`，然后将其参考上面的目录树放在新容器的映射目录下，然后在创建容器时，保证新容器中的下载文件的保存路径和旧容器一致，并新建容器即可。
 
-- 举例说明如何保证新容器中的下载文件的保存路径和旧容器一致，比如旧容器中下载了一个 `xxx.2020.BluRay.1080p.x264.DTS-XXX`，保存路径为`/movies`（宿主机上的真实路径为`/volume1/home/id/movies`），那么在新建新容器时，给新容器增加一个路径映射：`-v /volume1/home/id/movies:/movies`　即可。
+- 举例说明如何保证新容器中的下载文件的保存路径和旧容器一致，比如旧容器中下载了一个 `xxx.2020.BluRay.1080p.x264.DTS-XXX`，保存路径为`/movies`（宿主机上的真实路径为`/volume1/home/id/movies`），那么在新建新容器时，给新容器增加一个路径映射：`/volume1/home/id/movies:/movies`　即可。
 
 - 注意新容器和旧容器映射路径的权限保持一致。
 

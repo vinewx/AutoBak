@@ -28,6 +28,9 @@ MINOR_SEMVER=$(printf "${RELEASE_SEMVER}" | cut -d '.' -f 1-2)
 MAJOR_SEMVER=$(printf "${RELEASE_SEMVER}" | cut -d '.' -f 1)
 declare -a IMAGES
 
+## 构建时出错自动退出
+set -e
+
 ## 构建amd64
 echo "buildx amd64"
 docker buildx build \
@@ -104,7 +107,7 @@ docker manifest annotate "${DOCKERHUB_REPOSITORY}:${MINOR_SEMVER}" "${DOCKERHUB_
 docker manifest annotate "${DOCKERHUB_REPOSITORY}:${PATCH_SEMVER}" "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm64-v8" --variant "v8"
 docker manifest annotate "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}" "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm64-v8" --variant "v8"
 
-## 推送到docker hub
+## 推送manifest到docker hub
 docker manifest push --purge "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}"
 docker manifest push --purge "${DOCKERHUB_REPOSITORY}:${PATCH_SEMVER}"
 docker manifest push --purge "${DOCKERHUB_REPOSITORY}:${MINOR_SEMVER}"

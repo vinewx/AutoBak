@@ -30,7 +30,6 @@ declare -a IMAGES
 
 ## 构建amd64
 buildx_amd64() {
-    echo "buildx amd64"
     docker buildx build \
         --cache-from "type=local,src=/tmp/.buildx-cache" \
         --cache-to "type=local,dest=/tmp/.buildx-cache" \
@@ -51,7 +50,6 @@ buildx_amd64() {
 
 ## 构建arm/v7
 buildx_armv7() {
-    echo "buildx arm/v7"
     docker buildx build \
         --cache-from "type=local,src=/tmp/.buildx-cache" \
         --cache-to "type=local,dest=/tmp/.buildx-cache" \
@@ -72,7 +70,6 @@ buildx_armv7() {
 
 ## 构建arm64/v8
 buildx_arm64() {
-    echo "buildx arm64/v8"
     docker buildx build \
         --cache-from "type=local,src=/tmp/.buildx-cache" \
         --cache-to "type=local,dest=/tmp/.buildx-cache" \
@@ -92,15 +89,18 @@ buildx_arm64() {
 }
 
 ## 本地构建容易出错，循环10次
-for ((i = 0; i <= 10; i++)); do
+for ((i = 1; i <= 10; i++)); do
+    echo "=======================amd64：第$i次构建尝试======================="
     buildx_amd64
     [[ $? -eq 0 ]] && break
 done
-for ((i = 0; i <= 10; i++)); do
+for ((i = 1; i <= 10; i++)); do
+    echo "=======================arm/v7：第$i次构建尝试======================="
     buildx_armv7
     [[ $? -eq 0 ]] && break
 done
-for ((i = 0; i <= 10; i++)); do
+for ((i = 1; i <= 10; i++)); do
+    echo "=======================arm64/v8：第$i次构建尝试======================="
     buildx_arm64
     [[ $? -eq 0 ]] && break
 done

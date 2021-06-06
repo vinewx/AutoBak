@@ -3,10 +3,12 @@
 - 自动按`tracker`分类；
 - 下载完成发送通知，可选途径：钉钉, Telegram, ServerChan, 爱语飞飞；
 - 故障时发送通知，可选途径同上；
+- 每4小时检查一下tracker状态，如发现种子的tracker状态有问题，将给该种子添加`TrackerError`的标签，方便筛选；
 - 日志输出到docker控制台，可从portainer查看；
 - 集成了`python`；
 - 即使集成了`python`，体积仍然很小；
-- 每4小时检查一下tracker状态，如发现种子的tracker状态有问题，将给该种子添加`TrackerError`的标签，方便筛选；
+- 默认中文UI；
+- 默认东八区时区；
 - 多标签可用，其中`latest` `4` `4.x` `4.x.x`是多平台标签，可用平台：`amd64` `arm/v7` `arm64`，其他标签均为单平台标签。
 - ![钉钉通知效果图](https://github.com/nevinen/dockerfiles/blob/master/qbittorrent/notify.png)
 

@@ -2,6 +2,7 @@
 
 - 自动按`tracker`分类；
 - 下载完成发送通知，可选途径：钉钉, Telegram, ServerChan, 爱语飞飞；
+- 下载完成通知搭配RSS功能自动下载效果很好，RSS教程：https://www.jianshu.com/p/54e6137ea4e3；
 - 故障时发送通知，可选途径同上；
 - 每4小时检查一下tracker状态，如发现种子的tracker状态有问题，将给该种子添加`TrackerError`的标签，方便筛选；
 - 日志输出到docker控制台，可从portainer查看；
@@ -147,7 +148,9 @@ armv7设备如若无法使用网络，可能是seccomp问题，详见 [这里](h
 
 **如何优雅的关闭qbittorrent容器**
 
-暴力强制关闭qbittorrent容器自然是容易丢失任务的，所以在关闭前应当先将所有种子暂停，过一会再关闭容器。这时，所有的配置文件和torrent恢复文件也都是暂停后的状态，然后再新建容器或重新部署，启动后再开始所有任务。
+- 暴力强制关闭qbittorrent容器自然是容易丢失任务的，所以在关闭前应当先将所有种子暂停，过一会再关闭容器。这时，所有的配置文件和torrent恢复文件也都是暂停后的状态，然后再新建容器或重新部署，启动后再开始所有任务。
+
+- 还有一点要注意，千万不要在有下载任务时关闭或重启qbittorrent容器。
 
 **如何从其他作者的镜像转移至本镜像？**
 
@@ -181,6 +184,23 @@ docker exec qbittorrent curl -k -X POST -d 'json={"alternative_webui_enabled":fa
 
 # 如果未启用ssl
 docker exec qbittorrent curl -X POST -d 'json={"alternative_webui_enabled":false}' http://127.0.0.1:${WEBUI_PORT}/api/v2/app/setPreferences
+```
+
+**安装了watchtower，如何让qbittorrent不被watchtower自动更新**
+
+- 方法1：部署qbittorrent容器时，直接指定标签，如`nevinee/qbittorrent:4.3.5`；
+
+- 方法2：在部署时在命令中添加一个label　`com.centurylinklabs.watchtower.enable=false`：
+
+docker cli：
+```
+--label com.centurylinklabs.watchtower.enable=false \
+```
+
+docker-compose:
+```
+    labels:
+      com.centurylinklabs.watchtower.enable: false
 ```
 
 ## 命令

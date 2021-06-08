@@ -15,7 +15,7 @@
 
 ## 创建
 
-1. docker cli
+**docker cli**
 
 ```
 docker run -dit \
@@ -34,7 +34,9 @@ docker run -dit \
 
 armv7设备如若无法使用网络，可能是seccomp问题，详见 [这里](https://wiki.alpinelinux.org/wiki/Release_Notes_for_Alpine_3.13.0#time64_requirements)。可以增加`--security-opt seccomp=unconfined` 来解决。
 
-2. docker-compose
+**docker-compose**
+
+新建`docker-compose.yml`文件如下，创建好后以`docker-compose up -d`命令启动即可。
 
 ```
 version: "2.0"

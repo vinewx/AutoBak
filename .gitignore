@@ -2,3 +2,4 @@
 /jd/src
 run.sh
 *.log
+/jd/buildx.sh

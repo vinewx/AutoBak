@@ -1,133 +1,55 @@
 #!/usr/bin/env bash
 
-## 使用 github action 编译时间实在太长了，基本上都要超时了，而一超时就容易被封账号，所以还是本地构建吧。
-## 本脚本主要用来本地进行跨平台构建，只考虑了三个常用的平台：amd64, arm/v7, arm64/v8
 ## 运行脚本的前提：已经运行过 docker login 并已经成功登陆。
-## 注意：本地编译仍然会花费好几个小时，并且极有可能中途报错，若中途报错，建议手动复制命令一条一条运行。
+## 注意：本地编译仍然会花费好几个小时，并且极有可能中途报错，若中途报错，建议手动复制命令一条一条运行；也可另写脚本调用本脚本编译。
 ## 在Dockerfile同目录下运行。
+## 需要先定义以下几个变量：
+## QB_FULL_VERSION=           ## qbittorrent版本
+## LIBTORRENT_FULL_VERSION=   ## libtorrent版本
+## DOCKERHUB_REPOSITORY=      ## 镜像名称
+## DOCKERFILE_NAME=""         ## 用来构建的Dockerfile文件名
 
-## 版本、镜像名称等
-export QB_FULL_VERSION=4.3.5
-export LIBTORRENT_FULL_VERSION=1.2.13
-export DOCKERHUB_REPOSITORY=nevinee/qbittorrent
-export DOCKER_CLI_EXPERIMENTAL=enabled
+set -e
 
-## 跨平台构建相关
-docker run --rm --privileged docker/binfmt:820fdd95a9972a5308930a2bdfb8573dd4447ad3
-docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-
-## 跨平台builder
-docker buildx create --name builder --use
-SUPPORTED_PLATFORMS=$(docker buildx inspect --bootstrap | grep 'Platforms:*.*' | cut -d : -f2,3)
-echo "Supported platforms: $SUPPORTED_PLATFORMS"
-
-## 各种版本号
+## qBittorrent的各种版本号
 RELEASE_SEMVER=${QB_FULL_VERSION}
 PATCH_SEMVER=$(printf "${RELEASE_SEMVER}" | cut -d '.' -f 1-3)
 MINOR_SEMVER=$(printf "${RELEASE_SEMVER}" | cut -d '.' -f 1-2)
 MAJOR_SEMVER=$(printf "${RELEASE_SEMVER}" | cut -d '.' -f 1)
+ALL_MULTIARCH_TAG=( ${MAJOR_SEMVER} ${MINOR_SEMVER} ${PATCH_SEMVER} ${RELEASE_SEMVER} latest )
+BUILDX_ARCH=( amd64 arm/v7 arm64 )
+
+## 构建
 declare -a IMAGES
-
-## 构建amd64
-buildx_amd64() {
+for arch in "${BUILDX_ARCH[@]}"; do
+    echo "构建目标平台：linux/${arch}"
     docker buildx build \
         --cache-from "type=local,src=/tmp/.buildx-cache" \
         --cache-to "type=local,dest=/tmp/.buildx-cache" \
         --output "type=image,push=true" \
-        --platform linux/amd64 \
+        --platform linux/${arch} \
         --build-arg "QBITTORRENT_VERSION=${QB_FULL_VERSION}" \
         --build-arg "LIBTORRENT_VERSION=${LIBTORRENT_FULL_VERSION}" \
-        --tag "${DOCKERHUB_REPOSITORY}:latest-amd64" \
-        --tag "${DOCKERHUB_REPOSITORY}:${MAJOR_SEMVER}-amd64" \
-        --tag "${DOCKERHUB_REPOSITORY}:${MINOR_SEMVER}-amd64" \
-        --tag "${DOCKERHUB_REPOSITORY}:${PATCH_SEMVER}-amd64" \
-        --tag "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-amd64" \
-        -f Dockerfile \
-        .
-        
-    IMAGES+=( "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-amd64" )
-}
-
-## 构建arm/v7
-buildx_armv7() {
-    docker buildx build \
-        --cache-from "type=local,src=/tmp/.buildx-cache" \
-        --cache-to "type=local,dest=/tmp/.buildx-cache" \
-        --output "type=image,push=true" \
-        --platform linux/arm/v7 \
-        --build-arg "QBITTORRENT_VERSION=${QB_FULL_VERSION}" \
-        --build-arg "LIBTORRENT_VERSION=${LIBTORRENT_FULL_VERSION}" \
-        --tag "${DOCKERHUB_REPOSITORY}:latest-arm-v7" \
-        --tag "${DOCKERHUB_REPOSITORY}:${MAJOR_SEMVER}-arm-v7" \
-        --tag "${DOCKERHUB_REPOSITORY}:${MINOR_SEMVER}-arm-v7" \
-        --tag "${DOCKERHUB_REPOSITORY}:${PATCH_SEMVER}-arm-v7" \
-        --tag "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm-v7" \
-        -f Dockerfile \
+        --tag "${DOCKERHUB_REPOSITORY}:${MAJOR_SEMVER}-${arch}" \
+        --tag "${DOCKERHUB_REPOSITORY}:${MINOR_SEMVER}-${arch}" \
+        --tag "${DOCKERHUB_REPOSITORY}:${PATCH_SEMVER}-${arch}" \
+        --tag "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-${arch}" \
+        --tag "${DOCKERHUB_REPOSITORY}:latest-${arch}" \
+        -f ${DOCKERFILE_NAME} \
         .
 
-    IMAGES+=( "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm-v7" )
-}
-
-## 构建arm64/v8
-buildx_arm64() {
-    docker buildx build \
-        --cache-from "type=local,src=/tmp/.buildx-cache" \
-        --cache-to "type=local,dest=/tmp/.buildx-cache" \
-        --output "type=image,push=true" \
-        --platform linux/arm64/v8 \
-        --build-arg "QBITTORRENT_VERSION=${QB_FULL_VERSION}" \
-        --build-arg "LIBTORRENT_VERSION=${LIBTORRENT_FULL_VERSION}" \
-        --tag "${DOCKERHUB_REPOSITORY}:latest-arm64-v8" \
-        --tag "${DOCKERHUB_REPOSITORY}:${MAJOR_SEMVER}-arm64-v8" \
-        --tag "${DOCKERHUB_REPOSITORY}:${MINOR_SEMVER}-arm64-v8" \
-        --tag "${DOCKERHUB_REPOSITORY}:${PATCH_SEMVER}-arm64-v8" \
-        --tag "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm64-v8" \
-        -f Dockerfile \
-        .
-
-    IMAGES+=( "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm64-v8" )
-}
-
-## 本地构建容易出错，循环10次
-for ((i = 1; i <= 10; i++)); do
-    echo "=======================amd64：第$i次构建尝试======================="
-    buildx_amd64
-    [[ $? -eq 0 ]] && break
-done
-for ((i = 1; i <= 10; i++)); do
-    echo "=======================arm/v7：第$i次构建尝试======================="
-    buildx_armv7
-    [[ $? -eq 0 ]] && break
-done
-for ((i = 1; i <= 10; i++)); do
-    echo "=======================arm64/v8：第$i次构建尝试======================="
-    buildx_arm64
-    [[ $? -eq 0 ]] && break
+    IMAGES+=( "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-${arch}" )
 done
 
 ## 增加manifest
-docker manifest create "${DOCKERHUB_REPOSITORY}:latest" "${IMAGES[@]}"
-docker manifest create "${DOCKERHUB_REPOSITORY}:${MAJOR_SEMVER}" "${IMAGES[@]}"
-docker manifest create "${DOCKERHUB_REPOSITORY}:${MINOR_SEMVER}" "${IMAGES[@]}"
-docker manifest create "${DOCKERHUB_REPOSITORY}:${PATCH_SEMVER}" "${IMAGES[@]}"
-docker manifest create "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}" "${IMAGES[@]}"
-
-docker manifest annotate "${DOCKERHUB_REPOSITORY}:latest" "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm-v7" --variant "v7"
-docker manifest annotate "${DOCKERHUB_REPOSITORY}:${MAJOR_SEMVER}" "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm-v7" --variant "v7"
-docker manifest annotate "${DOCKERHUB_REPOSITORY}:${MINOR_SEMVER}" "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm-v7" --variant "v7"
-docker manifest annotate "${DOCKERHUB_REPOSITORY}:${PATCH_SEMVER}" "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm-v7" --variant "v7"
-docker manifest annotate "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}" "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm-v7" --variant "v7"
-
-docker manifest annotate "${DOCKERHUB_REPOSITORY}:latest" "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm64-v8" --variant "v8"
-docker manifest annotate "${DOCKERHUB_REPOSITORY}:${MAJOR_SEMVER}" "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm64-v8" --variant "v8"
-docker manifest annotate "${DOCKERHUB_REPOSITORY}:${MINOR_SEMVER}" "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm64-v8" --variant "v8"
-docker manifest annotate "${DOCKERHUB_REPOSITORY}:${PATCH_SEMVER}" "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm64-v8" --variant "v8"
-docker manifest annotate "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}" "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm64-v8" --variant "v8"
+for tag in "${ALL_MULTIARCH_TAG[@]}"; do
+    docker manifest create "${DOCKERHUB_REPOSITORY}:${tag}" "${IMAGES[@]}"
+    docker manifest annotate "${DOCKERHUB_REPOSITORY}:${tag}" "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm-v7" --variant "v7"
+    docker manifest annotate "${DOCKERHUB_REPOSITORY}:${tag}" "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm64-v8" --variant "v8"
+done
 
 ## 推送manifest到docker hub
-docker manifest push --purge "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}"
-docker manifest push --purge "${DOCKERHUB_REPOSITORY}:${PATCH_SEMVER}"
-docker manifest push --purge "${DOCKERHUB_REPOSITORY}:${MINOR_SEMVER}"
-docker manifest push --purge "${DOCKERHUB_REPOSITORY}:${MAJOR_SEMVER}"
-docker manifest push --purge "${DOCKERHUB_REPOSITORY}:latest"
+for tag in ${ALL_MULTIARCH_TAG[@]}; do
+    docker manifest push --purge "${DOCKERHUB_REPOSITORY}:${tag}"
+done
 

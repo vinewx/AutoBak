@@ -20,7 +20,6 @@ WORKDIR $JD_DIR
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
     && echo "========= 安装软件 =========" \
     && apk update -f \
-    && apk upgrade \
     && apk --no-cache add -f \
        bash \
        coreutils \
@@ -47,7 +46,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
     && ssh-keyscan $REPO_URL > /root/.ssh/known_hosts \
     && git config --global pull.ff only \
     && echo "========= 安装PM2 =========" \
-    && npm install -g pm2 \
+    && npm install -g pm2@4.5.6 \
     && echo "========= 创建软链接 =========" \
     && ln -sf $JD_DIR/jtask.sh /usr/local/bin/jtask \
     && ln -sf $JD_DIR/jtask.sh /usr/local/bin/otask \

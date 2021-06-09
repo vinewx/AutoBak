@@ -1,5 +1,6 @@
 /jdc/s6*
 /jd/src
 run.sh
+!/qbittorrent/run.sh
 *.log
 /jd/buildx.sh

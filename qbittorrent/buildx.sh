@@ -30,22 +30,22 @@ for arch in "${BUILDX_ARCH[@]}"; do
         --platform linux/${arch} \
         --build-arg "QBITTORRENT_VERSION=${QB_FULL_VERSION}" \
         --build-arg "LIBTORRENT_VERSION=${LIBTORRENT_FULL_VERSION}" \
-        --tag "${DOCKERHUB_REPOSITORY}:${MAJOR_SEMVER}-${arch}" \
-        --tag "${DOCKERHUB_REPOSITORY}:${MINOR_SEMVER}-${arch}" \
-        --tag "${DOCKERHUB_REPOSITORY}:${PATCH_SEMVER}-${arch}" \
-        --tag "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-${arch}" \
-        --tag "${DOCKERHUB_REPOSITORY}:latest-${arch}" \
+        --tag "${DOCKERHUB_REPOSITORY}:${MAJOR_SEMVER}-${arch//\//-}" \
+        --tag "${DOCKERHUB_REPOSITORY}:${MINOR_SEMVER}-${arch//\//-}" \
+        --tag "${DOCKERHUB_REPOSITORY}:${PATCH_SEMVER}-${arch//\//-}" \
+        --tag "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-${arch//\//-}" \
+        --tag "${DOCKERHUB_REPOSITORY}:latest-${arch//\//-}" \
         -f ${DOCKERFILE_NAME} \
         .
 
-    IMAGES+=( "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-${arch}" )
+    IMAGES+=( "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-${arch//\//-}" )
 done
 
 ## 增加manifest
 for tag in "${ALL_MULTIARCH_TAG[@]}"; do
     docker manifest create "${DOCKERHUB_REPOSITORY}:${tag}" "${IMAGES[@]}"
     docker manifest annotate "${DOCKERHUB_REPOSITORY}:${tag}" "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm-v7" --variant "v7"
-    docker manifest annotate "${DOCKERHUB_REPOSITORY}:${tag}" "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm64-v8" --variant "v8"
+    docker manifest annotate "${DOCKERHUB_REPOSITORY}:${tag}" "${DOCKERHUB_REPOSITORY}:${RELEASE_SEMVER}-arm64" --variant "v8"
 done
 
 ## 推送manifest到docker hub

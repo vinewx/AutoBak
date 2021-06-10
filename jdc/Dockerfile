@@ -1,6 +1,6 @@
 FROM alpine:latest
 COPY --from=nevinee/s6-overlay-stage:latest / /
-COPY jdc/s6-overlay /
+COPY s6-overlay /
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     LANG=zh_CN.UTF-8 \
     SHELL=/bin/bash \

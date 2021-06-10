@@ -232,15 +232,15 @@ docker logs -f qbittorrent
 
 ## 说明
 
-- [Dockerfile](https://github.com/nevinen/dockerfiles/blob/master/qbittorrent/Dockerfile)
+- Dockerfile、构建脚本、以及构建日志请见：https://github.com/nevinen/dockerfiles/blob/master/qbittorrent
 
-- 参考：
+## 参考：
 
-  + [crazymax/qbittorrent](https://hub.docker.com/r/crazymax/qbittorrent) , 参考了Dockerfile; 
+- [crazymax/qbittorrent](https://hub.docker.com/r/crazymax/qbittorrent) , 参考了Dockerfile; 
   
-  + [80x86/qbittorrent](https://hub.docker.com/r/80x86/qbittorrent), 借鉴了标签和分类的理念，正因为此镜像源码未公开，且长期不更新，并且集成acme会和acme本身的项目重复，这才催生我重写代码；
+- [80x86/qbittorrent](https://hub.docker.com/r/80x86/qbittorrent), 借鉴了标签和分类的理念，正因为此镜像源码未公开，且长期不更新，并且集成acme会和acme本身的项目重复，这才催生我重写代码；
 
-  + [arpaulnet/s6-overlay-stage](https://hub.docker.com/r/arpaulnet/s6-overlay-stage), 学习了多平台镜像制作方法。
+- [arpaulnet/s6-overlay-stage](https://hub.docker.com/r/arpaulnet/s6-overlay-stage), 学习了多平台镜像制作方法。
 
 ## 问题反馈
 

@@ -23,7 +23,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
 ARG LIBTORRENT_VERSION
 RUN cd /tmp \
-    && git clone --branch v${LIBTORRENT_VERSION} --recurse-submodules https://github.com/arvidn/libtorrent.git \
+    && git clone --branch v${LIBTORRENT_VERSION} --recurse-submodules https://gitee.com/evine/libtorrent.git \
     && cd libtorrent \
     && ./autotool.sh \
     && ./configure CXXFLAGS="-std=c++14" --with-libiconv \
@@ -39,7 +39,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
 ARG QBITTORRENT_VERSION
 RUN cd /tmp \
-    && git clone --branch release-${QBITTORRENT_VERSION} https://github.com/qbittorrent/qBittorrent.git \
+    && git clone --branch release-${QBITTORRENT_VERSION} https://gitee.com/evine/qBittorrent.git \
     && cd qBittorrent \
     && ./configure --disable-gui \
     && make -j$(nproc) \

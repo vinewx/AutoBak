@@ -64,6 +64,7 @@
 |  2  | ENABLE_AUTO_CATEGORY    | true          | 是否自动分类，默认自动分类，如不想自动分类，请设置为`false`。 |
 |  3  | TG_PROXY_ADDRESS        |               | 给TG机器人发送消息的代理地址，当设置了`TG_USER_ID`和`TG_BOT_TOKEN`后可以设置此值，形如：`http://192.168.1.1:7890`，也可以不设置。 |
 |  4  | TG_PROXY_USER           |               | 给TG机器人发送消息的代理的用户名和密码，当设置了`TG_PROXY_ADDRESS`后可以设置此值，格式为：`<用户名>:<密码>`，形如：`admin:password`，如没有可不设置。 |
+|  5  | PUSHPLUS_TOKEN          |               | 通知渠道PUSH PLUS，填入其token，详见：http://www.pushplus.plus |
 
 ## 创建
 

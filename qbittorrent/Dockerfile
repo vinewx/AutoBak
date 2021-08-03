@@ -35,6 +35,7 @@ RUN echo "Copy to /out" \
     && mkdir -p /out/usr/bin \
     && cp -d /usr/local/lib/libtorrent-rasterbar.so* /out/usr/lib \
     && cp /usr/local/bin/qbittorrent-nox /out/usr/bin
+COPY s6-overlay /out
 
 FROM alpine
 ENV QBITTORRENT_HOME="/home/qbittorrent" \
@@ -57,9 +58,8 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
     && rm -rf /tmp/* /var/cache/apk/* \
     && ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime \
     && echo "${TZ}" > /etc/timezone \
-    && useradd qbittorrent -u ${PUID} -U -m -d ${QBITTORRENT_HOME} -s /bin/bash
+    && useradd qbittorrent -u ${PUID} -U -m -d ${QBITTORRENT_HOME} -s /sbin/nologin
 COPY --from=builder /out /
-COPY s6-overlay /
 WORKDIR /data
 VOLUME ["/data"]
 ENTRYPOINT ["/init"]

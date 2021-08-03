@@ -268,87 +268,7 @@ docker-compose:
 
 **将qbittorrent安装在macvlan网络上时，如何使用IYUUAutoReseed自动辅种**
 
-将两个容器都安装在同一个macvlan网络上即可，下面是本人两个容器的docker-compose.yml，供参考。
-
-*qbittorrent*
-
-```
-version: "2.0"
-services:
-  qbittorrent:
-    image: nevinee/qbittorrent
-    container_name: qbittorrent
-    restart: always
-    networks: 
-      mymacvlan:
-        ipv4_address: 10.0.0.141
-        aliases:
-          - qbittorrent
-    dns:
-      - 10.0.0.1
-      - 223.5.5.5
-    hostname: qbittorrent
-    volumes:
-      - /root/appdata/qbittorrent:/data
-      - /srv/dev-disk-by-uuid-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/multimedia/movies:/movies
-      - /srv/dev-disk-by-uuid-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/multimedia/tv:/tv
-      - /srv/dev-disk-by-uuid-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/multimedia/ebook:/ebook
-      - /srv/dev-disk-by-uuid-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/multimedia/music:/music
-      - /srv/dev-disk-by-uuid-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/multimedia/software:/software
-      - /srv/dev-disk-by-uuid-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/multimedia/video:/video
-    environment:
-      - PUID=1000
-      - PGID=100
-      - WEBUI_PORT=8087
-      - BT_PORT=22222
-      - TZ=Asia/Shanghai
-      - INSTALL_PYTHON=true
-      - UMASK_SET=022
-      - DD_BOT_TOKEN=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-      - DD_BOT_SECRET=SECxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-      - CRON_HEALTH_CHECK=16 * * * *
-      - CRON_AUTO_CATEGORY=26 2 * * *
-      - CRON_TRACKER_ERROR=46 3 * * *
-      - DL_FINISH_NOTIFY=true
-    labels:
-      com.centurylinklabs.watchtower.enable: false
-
-networks: 
-  mymacvlan:
-    external: true
-```
-
-*iyuuautoreseed*
-
-```
-version: "2.0"
-services:
-  iyuu:
-    image: nevinee/iyuuautoreseed
-    container_name: iyuu
-    restart: always
-    networks: 
-      mymacvlan:
-        ipv4_address: 10.0.0.149
-        aliases:
-          - iyuu
-    hostname: iyuu
-    dns:
-      - 10.0.0.1
-      - 223.5.5.5
-    extra_hosts:
-      - "qb.example.com:10.0.0.141"    # qbittorrent使用了ssl证书的话，给它指定这个域名对应的ip
-    volumes:
-      - /root/appdata/iyuu:/iyuu
-      - /root/appdata/qbittorrent:/qbittorrent
-    environment:
-      - CRON_GIT_PULL=23 7,19 * * *    # 更新脚本的cron
-      - CRON_IYUU=51 7,19 * * *        # 辅种程序的cron
-
-networks: 
-  mymacvlan:
-    external: true
-```
+将两个容器都安装在同一个macvlan网络上即可。
 
 ## 命令
 
@@ -359,7 +279,7 @@ docker exec qbittorrent notify "测试消息标题" "测试消息通知内容"
 # 将所有种子按tracker进行分类，cron（CRON_AUTO_CATEGORY）如未修改会自动每两小时运行一次
 docker exec qbittorrent auto-cat -a
 
-# 将指定种子按tracker进行分类，会自动在下载完成时运行一次
+# 将指定种子按tracker进行分类，会自动在下载完成时运行一次（由 dl-finish <hash> 命令调用）
 docker exec qbittorrent auto-cat -i <hash>   # hash可以在种子详情中的"普通"标签页上查看到
 
 # 下载完成时将种子分类，并发送通知，已经在配置文件中填好了
@@ -389,6 +309,6 @@ docker logs -f qbittorrent
 
 ## 问题反馈
 
-请在 [这里](https://github.com/nevinen/dockerfiles/issues) 提交。
+请在 [这里](https://github.com/nevinen/dockerfiles/issues) 提交。看到这里的人都是真爱，点个赞再走。
 
 [![dockeri.co](http://dockeri.co/image/nevinee/qbittorrent)](https://registry.hub.docker.com/nevinee/qbittorrent/)

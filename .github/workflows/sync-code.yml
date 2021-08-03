@@ -9,47 +9,37 @@ jobs:
     if: github.repository == 'vinewx/AutoBak'
     timeout-minutes: 2
     steps:
-    - name: Init Build Dependencies
-      env:
-        DEBIAN_FRONTEND: noninteractive
+
+    #- name: Init Build Dependencies
+    #  env:
+    #    DEBIAN_FRONTEND: noninteractive
+    #  run: |
+    #    sudo -E rm -rf /etc/apt/sources.list.d
+    #    sudo -E apt-get update -y
+    #    sudo -E apt-get install -y build-essential git git-core curl wget
+    #    sudo -E apt-get clean -y
+    #    git config --global user.name 'GitHub Actions' && git config --global user.email 'noreply@github.com'
+
+    - name: Get Code from Other Repository
       run: |
-        sudo -E rm -rf /etc/apt/sources.list.d
-        sudo -E apt-get update -y
-        sudo -E apt-get install -y build-essential git git-core curl wget
-        sudo -E apt-get clean -y
         git config --global user.name 'GitHub Actions' && git config --global user.email 'noreply@github.com'
+        #mkdir -p ~/.ssh
+        #echo -e "${{ secrets.LXKEY }}" > ~/.ssh/id_rsa
+        #chmod 600 ~/.ssh/id_rsa
+        #ssh-keyscan gitee.com > ~/.ssh/known_hosts
+        #git clone -b master git@gitee.com:lxk0301/jd_scripts.git lxk0301
+        git clone -b master https://github.com/whyour/qinglong qinglong
+        git clone -b master https://github.com/whyour/qinglong-static qinglong-static
+        git clone -b main https://github.com/MoonBegonia/ninja ninja
+        git clone -b main https://github.com/Zy143L/jd_cookie jd_cookie
+        git clone -b master https://github.com/nevinen/dockerfiles evine_dockerfiles
 
-    - name: Get Code from Private Repository
-      run: |
-        mkdir -p ~/.ssh
-        echo -e "${{ secrets.EVINEKEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan gitee.com > ~/.ssh/known_hosts
-        git clone -b master git@gitee.com:evine/jd_shell.git evine
-        echo -e "${{ secrets.LXKEY }}" > ~/.ssh/id_rsa
-        git clone -b master git@gitee.com:lxk0301/jd_scripts.git lxk0301
-        git clone -b master https://github.com/whyour/qinglong whyour
-
-    - name: Push evine
-      uses: ad-m/github-push-action@master
-      with:
-        directory: evine
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: evine
-
-    - name: Push lxk0301
-      uses: ad-m/github-push-action@master
-      with:
-        directory: lxk0301
-        github_token: ${{ secrets.GITHUBKEY }}
-        branch: lxk0301
-
-    - name: Push whyour
-      uses: ad-m/github-push-action@master
-      with:
-        directory: whyour
-        github_token: ${{ secrets.GITHUBKEY }}
-        branch: whyour
+    #- name: Push lxk0301
+    #  uses: ad-m/github-push-action@master
+    #  with:
+    #    directory: lxk0301
+    #    github_token: ${{ secrets.GITHUBKEY }}
+    #    branch: lxk0301
 
     - name: Delete Workflow Runs
       uses: Mattraks/delete-workflow-runs@main
@@ -58,3 +48,43 @@ jobs:
         repository: ${{ github.repository }}
         retain_days: 1
         keep_minimum_runs: 0
+
+    - name: Push qinglong
+      uses: ad-m/github-push-action@master
+      with:
+        directory: qinglong
+        github_token: ${{ secrets.GITHUBKEY }}
+        branch: qinglong
+        force: true
+
+    - name: Push qinglong-static
+      uses: ad-m/github-push-action@master
+      with:
+        directory: qinglong-static
+        github_token: ${{ secrets.GITHUBKEY }}
+        branch: qinglong-static
+        force: true
+
+    - name: Push ninja
+      uses: ad-m/github-push-action@master
+      with:
+        directory: ninja
+        github_token: ${{ secrets.GITHUBKEY }}
+        branch: ninja
+        force: true
+
+    - name: Push jd_cookie
+      uses: ad-m/github-push-action@master
+      with:
+        directory: jd_cookie
+        github_token: ${{ secrets.GITHUBKEY }}
+        branch: jd_cookie
+        force: true
+
+    - name: Push evine_dockerfiles
+      uses: ad-m/github-push-action@master
+      with:
+        directory: evine_dockerfiles
+        github_token: ${{ secrets.GITHUBKEY }}
+        branch: evine_dockerfiles
+        force: true

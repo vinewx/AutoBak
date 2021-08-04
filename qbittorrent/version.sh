@@ -20,12 +20,14 @@ ver_qbbeta_local=$(cat qbittorrent-beta.version)
 . $dir_myscripts/notify.sh
 . $dir_myscripts/my_config.sh
 
-cmd_dispatches="curl -X POST -H \"Accept: application/vnd.github.v3+json\" -H \"Authorization: token ${GITHUB_MIRROR_TOKEN}\" https://api.github.com/repos/nevinen/dockerfiles/dispatches"
-
 ## 触发同步仓库
 if [[ $ver_qb_official ]] || [[ $ver_qbbeta_official ]]; then
     if [[ $ver_qb_official != $ver_qb_local || $ver_qbbeta_official != $ver_qbbeta_local ]]; then
-        $cmd_dispatches -d '{"event_type":"mirror"}'
+        curl -X POST \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token ${GITHUB_MIRROR_TOKEN}" \
+            -d '{"event_type":"mirror"}' \
+            https://api.github.com/repos/nevinen/dockerfiles/dispatches
     fi
 fi
 
@@ -33,7 +35,6 @@ fi
 if [[ $ver_qb_official ]]; then
     if [[ $ver_qb_official != $ver_qb_local ]]; then
         echo "官方已升级qBittorrent版本至：$ver_qb_official，开始触发Github Action..."
-        # $cmd_dispatches -d '{"event_type":"qbittorrent"}'  ## 改用gh workflow触发
         sleep 3
         gh workflow run qbittorrent.yml -f version=$ver_qb_official
         [[ $? -eq 0 ]] && {
@@ -47,7 +48,6 @@ fi
 if [[ $ver_qbbeta_official ]]; then
     if [[ $ver_qbbeta_official != $ver_qbbeta_local ]]; then
         echo "官方已升级qBittorrent beta版本至：$ver_qbbeta_official，开始触发Github Action..."
-        # $cmd_dispatches -d '{"event_type":"qbittorrent-beta"}'  ## 改用gh workflow触发
         sleep 3
         gh workflow run qbittorrent.yml -f version=$ver_qbbeta_official
         [[ $? -eq 0 ]] && {

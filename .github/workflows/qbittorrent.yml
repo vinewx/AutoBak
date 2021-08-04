@@ -185,7 +185,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}
           readme-filepath: ./${{ env.IMAGE_NAME }}/readme.md
-          short-description: ${{ env.IMAGE_NAME }} ${{ needs.base.outputs.full_version }}：全平台, 下载完成通知, 自动分类, tracker错误标记, 宕机通知, 日志显示
+          short-description: ${{ env.IMAGE_NAME }} ${{ needs.base.outputs.full_version }}：全平台, 下载完成通知, 自动分类, tracker错误标记, 批量修改tracker, 宕机通知, 日志显示
 
   notify:
     needs: [base, build, maintain]

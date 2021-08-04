@@ -49,7 +49,7 @@ jobs:
               MULTITAGS="${MAJOR_VERSION} ${MINOR_VERSION} ${PATCH_VERSION} ${FULL_VERSION} latest"
             fi
           else
-            MULTITAGS="${FULL_VERSION}"
+            MULTITAGS="${FULL_VERSION} beta"
           fi
           ######################### ↑特殊部分↑ #########################
 

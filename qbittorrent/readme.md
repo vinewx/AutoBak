@@ -3,12 +3,12 @@
 - 自动按`tracker`分类。
 - 下载完成发送通知，可选途径：钉钉（[效果图](https://gitee.com/evine/dockerfiles/raw/master/qbittorrent/notify.png)）, Telegram, ServerChan, 爱语飞飞, PUSHPLUS推送加；搭配RSS功能（[RSS教程](https://www.jianshu.com/p/54e6137ea4e3)）自动下载效果很好；下载完成后还可以补充运行你的自定义脚本。
 - 故障时发送通知，可选途径同上。
-- 按设定的cron检查tracker状态，如发现种子的tracker状态有问题，将给该种子添加`TrackerError`的标签，方便筛选；如果超过出错数量超过设定的阈值，给设定渠道发送通知。
+- 按设定的cron检查tracker状态，如发现种子的tracker状态有问题，将给该种子添加`TrackerError`的标签，方便筛选；如果tracker出错数量超过设定的阈值，给设定渠道发送通知。
 - 自带批量修改tracker的功能，可精确匹配也可模糊匹配。
 - 日志输出到docker控制台，可从portainer查看。
 - `python`为可选安装项，设置为`true`就自动安装。
 - 体积小，默认中文UI，默认东八区时区。
-- 多标签可用，形如`latest` `4` `4.x` `4.x.x`，均是多平台标签，可用平台：`amd64` `386` `arm/v6` `arm/v7` `arm64` `ppc64le` `s390x`。
+- 多标签可用，形如`latest` `4` `4.x` `4.x.x` `4.x.xbetax`，均是多平台标签，可用平台：`amd64` `386` `arm/v6` `arm/v7` `arm64` `ppc64le` `s390x`。
 
 ## 更新日志
 
@@ -239,7 +239,7 @@ curl -X POST -d 'json={"alternative_webui_enabled":false}' http://127.0.0.1:${WE
 
 **安装了watchtower，如何让qbittorrent不被watchtower自动更新**
 
-- 方法1：部署qbittorrent容器时，直接指定标签，如`nevinee/qbittorrent:4.3.5`；
+- 方法1：部署qbittorrent容器时，直接指定标签，如`nevinee/qbittorrent:4.3.7`；
 
 - 方法2（推荐）：在部署时在命令中添加一个label：`com.centurylinklabs.watchtower.enable=false`：
 

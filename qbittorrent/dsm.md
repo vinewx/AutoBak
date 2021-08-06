@@ -9,3 +9,4 @@
 ![图9](pictures/9.png)
 ![图10](pictures/10.png)
 ![图11](pictures/11.png)
+![图12](pictures/12.png)

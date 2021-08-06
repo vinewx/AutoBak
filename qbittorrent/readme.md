@@ -1,7 +1,7 @@
 ## 特点
 
 - 自动按`tracker`分类。
-- 下载完成发送通知，可选途径：钉钉（[效果图](https://gitee.com/evine/dockerfiles/raw/master/qbittorrent/notify.png)）, Telegram, ServerChan, 爱语飞飞, PUSHPLUS推送加；搭配RSS功能（[RSS教程](https://www.jianshu.com/p/54e6137ea4e3)）自动下载效果很好；下载完成后还可以补充运行你的自定义脚本。
+- 下载完成发送通知，可选途径：钉钉（[效果图](https://gitee.com/evine/dockerfiles/raw/master/qbittorrent/pictures/notify.png)）, Telegram, ServerChan, 爱语飞飞, PUSHPLUS推送加；搭配RSS功能（[RSS教程](https://www.jianshu.com/p/54e6137ea4e3)）自动下载效果很好；下载完成后还可以补充运行你的自定义脚本。
 - 故障时发送通知，可选途径同上。
 - 按设定的cron检查tracker状态，如发现种子的tracker状态有问题，将给该种子添加`TrackerError`的标签，方便筛选；如果tracker出错数量超过设定的阈值，给设定渠道发送通知。
 - 自带批量修改tracker的功能，可精确匹配也可模糊匹配。
@@ -51,6 +51,10 @@
 |  22 | TRACKER_ERROR_COUNT_MIN | 3             | 可以设置的值：正整数。在检测到tracker出错的种子数量超过这个阈值时，给设置的通知渠道发送通知。4.3.7+可用。 |
 
 ## 创建
+
+**群晖**
+
+请见 [这里](https://gitee.com/evine/dockerfiles/blob/master/qbittorrent/dsm.md)。
 
 **docker cli**
 

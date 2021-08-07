@@ -20,19 +20,20 @@ ver_lib2_local=$(cat 2.x.version)
 . $dir_myscripts/notify.sh
 . $dir_myscripts/my_config.sh
 
-cmd_dispatches="curl -X POST -H \"Accept: application/vnd.github.v3+json\" -H \"Authorization: token ${GITHUB_MIRROR_TOKEN}\" https://api.github.com/repos/nevinen/dockerfiles/dispatches"
-
 ## 触发同步仓库
 if [[ $ver_lib1_official ]] || [[ $ver_lib2_official ]]; then
     if [[ $ver_lib1_official != $ver_lib1_local || $ver_lib2_official != $ver_lib2_local ]]; then
-        $cmd_dispatches -d '{"event_type":"mirror"}'
+        curl -X POST \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token ${GITHUB_MIRROR_TOKEN}" \
+            -d '{"event_type":"mirror"}' \
+            https://api.github.com/repos/nevinen/dockerfiles/dispatches
     fi
 fi
 
 ## 检测官方版本与本地版本是否一致，如不一致则触发Github Action构建镜像
 if [[ $ver_lib1_official ]]; then
     if [[ $ver_lib1_official != $ver_lib1_local ]]; then
-        # $cmd_dispatches -d '{"event_type":"libtorrent-rasterbar-1.x"}'  ## 改用gh workflow触发
         sleep 3
         gh workflow run litorrent-rasterbar.yml -f version=$ver_lib1_official
         [[ $? -eq 0 ]] && {
@@ -46,7 +47,6 @@ fi
 
 if [[ $ver_lib2_official ]]; then
     if [[ $ver_lib2_official != $ver_lib2_local ]]; then
-        # $cmd_dispatches -d '{"event_type":"libtorrent-rasterbar-2.x"}'  ## 改用gh workflow触发
         sleep 3
         gh workflow run litorrent-rasterbar.yml -f version=$ver_lib2_official
         [[ $? -eq 0 ]] && {

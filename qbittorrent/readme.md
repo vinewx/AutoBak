@@ -56,7 +56,7 @@
 
 <details>
 
-<summary markdown="span">群晖</summary>
+<summary markdown="span"><b>群晖</b></summary>
 
 请见 [这里](https://gitee.com/evine/dockerfiles/blob/master/qbittorrent/dsm.md)。
 
@@ -64,7 +64,7 @@
 
 <details>
 
-<summary markdown="span">docker cli</summary>
+<summary markdown="span"><b>docker cli</b></summary>
 
 ```
 docker run -dit \
@@ -93,7 +93,7 @@ docker run -dit \
 
 <details>
 
-<summary markdown="span">docker-compose</summary>
+<summary markdown="span"><b>docker-compose</b></summary>
 
 新建`docker-compose.yml`文件如下（[点我查看arm设备如何安装docker-compose](https://www.jianshu.com/p/1beecfed17bc)），创建好后以`docker-compose up -d`命令启动即可。
 
@@ -202,7 +202,7 @@ networks:
 
 <details>
 
-<summary markdown="span">如何在运行 dl-finish "%I" 时调用自定义脚本</summary>
+<summary markdown="span"><b>如何在运行 dl-finish "%I" 时调用自定义脚本</b></summary>
 
 - 此功能可用版本：4.3.7+；
 
@@ -214,7 +214,7 @@ networks:
 
 <details>
 
-<summary markdown="span">如何优雅的关闭qbittorrent容器</summary>
+<summary markdown="span"><b>如何优雅的关闭qbittorrent容器</b></summary>
 
 - 暴力强制关闭qbittorrent容器自然是容易丢失任务的，所以在关闭前应当先将所有种子暂停，过一会再关闭容器。这时，所有的配置文件和torrent恢复文件也都是暂停后的状态，然后再新建容器或重新部署，启动后再开始所有任务。
 
@@ -224,7 +224,7 @@ networks:
 
 <details>
 
-<summary markdown="span">如何从其他作者的镜像转移至本镜像</summary>
+<summary markdown="span"><b>如何从其他作者的镜像转移至本镜像</b></summary>
 
 - 请注意要优雅的关闭旧容器后再处理配置文件。
 
@@ -240,7 +240,7 @@ networks:
 
 <details>
 
-<summary markdown="span">遗忘登陆密码如何重置</summary>
+<summary markdown="span"><b>遗忘登陆密码如何重置</b></summary>
 
 ```
 # 进入容器
@@ -257,7 +257,7 @@ curl -X POST -d 'json={"web_ui_username":"新的用户名","web_ui_password":"�
 
 <details>
 
-<summary markdown="span">如何与emby, jellyfin, plex等等配合使用</summary>
+<summary markdown="span"><b>如何与emby, jellyfin, plex等等配合使用</b></summary>
 
 将需要配合使用的容器的环境变量PUID/PGID设置为一样的即可。
 
@@ -265,8 +265,7 @@ curl -X POST -d 'json={"web_ui_username":"新的用户名","web_ui_password":"�
 
 <details>
 
-<summary markdown="span">启用了其他非官方webui，导致webui打不开，如何关闭
-</summary>
+<summary markdown="span"><b>启用了其他非官方webui，导致webui打不开，如何关闭</b></summary>
 
 ```
 # 进入容器
@@ -283,7 +282,7 @@ curl -X POST -d 'json={"alternative_webui_enabled":false}' http://127.0.0.1:${WE
 
 <details>
 
-<summary markdown="span">安装了watchtower，如何让qbittorrent不被watchtower自动更新</summary>
+<summary markdown="span"><b>安装了watchtower，如何让qbittorrent不被watchtower自动更新</b></summary>
 
 - 方法1：部署qbittorrent容器时，直接指定标签，如`nevinee/qbittorrent:4.3.7`；
 
@@ -304,7 +303,7 @@ curl -X POST -d 'json={"alternative_webui_enabled":false}' http://127.0.0.1:${WE
 
 <details>
 
-<summary markdown="span">为何建议将qbittorrent安装在macvlan网络上</summary>
+<summary markdown="span"><b>为何建议将qbittorrent安装在macvlan网络上</b></summary>
 
 - 可以在网关上给qbittorrent所在ip独立设置限速; 
 
@@ -314,7 +313,7 @@ curl -X POST -d 'json={"alternative_webui_enabled":false}' http://127.0.0.1:${WE
 
 <details>
 
-<summary markdown="span">将qbittorrent安装在macvlan网络上时，如何使用IYUUAutoReseed自动辅种</summary>
+<summary markdown="span"><b>将qbittorrent安装在macvlan网络上时，如何使用IYUUAutoReseed自动辅种</b></summary>
 
 将两个容器都安装在同一个macvlan网络上即可。
 

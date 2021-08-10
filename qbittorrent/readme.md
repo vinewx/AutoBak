@@ -52,11 +52,19 @@
 
 ## 创建
 
-**群晖**
+**点击下列每种部署方式可展开详情。**
+
+<details>
+
+<summary markdown="span">群晖</summary>
 
 请见 [这里](https://gitee.com/evine/dockerfiles/blob/master/qbittorrent/dsm.md)。
 
-**docker cli**
+</details>
+
+<details>
+
+<summary markdown="span">docker cli</summary>
 
 ```
 docker run -dit \
@@ -81,7 +89,11 @@ docker run -dit \
 
 - 如想参与qbittorrent测试工作，可以指定测试标签，如`nevinee/qbittorrent:beta`，请向qbittorrent官方反馈遇到的问题。
 
-**docker-compose**
+</details>
+
+<details>
+
+<summary markdown="span">docker-compose</summary>
 
 新建`docker-compose.yml`文件如下（[点我查看arm设备如何安装docker-compose](https://www.jianshu.com/p/1beecfed17bc)），创建好后以`docker-compose up -d`命令启动即可。
 
@@ -151,6 +163,8 @@ networks:
 
 - 如想参与qbittorrent测试工作，可以指定测试标签，如`nevinee/qbittorrent:beta`，如遇到问题请向qbittorrent官方反馈。
 
+</details>
+
 ## 目录说明
 
 只需要映射一个目录给容器（当然你要映射其他目录作为下载目录也没有问题），在映射的容器内的`/data`文件夹下会有以下文件夹：
@@ -184,8 +198,11 @@ networks:
 
 ## 相关问题
 
+**点击每个问题可展开答案。**
 
-**如何在运行`dl-finish "%I"`时调用自定义脚本**
+<details>
+
+<summary markdown="span">如何在运行 dl-finish "%I" 时调用自定义脚本</summary>
 
 - 此功能可用版本：4.3.7+；
 
@@ -193,13 +210,21 @@ networks:
 
 - 假如你要调用其他语言的脚本，比如python，可以在`diy.sh`中写上`python3 /data/diy/your_python_scripts.py $torrent_hash`即可，传递的只有种子hash，其他信息需凭借`$torrent_hash`的值通过qbittorrent的api获取。还可以参考 [这个](https://github.com/nevinen/dockerfiles/issues/3#issuecomment-887309444) 办法。
 
-**如何优雅的关闭qbittorrent容器**
+</details>
+
+<details>
+
+<summary markdown="span">如何优雅的关闭qbittorrent容器</summary>
 
 - 暴力强制关闭qbittorrent容器自然是容易丢失任务的，所以在关闭前应当先将所有种子暂停，过一会再关闭容器。这时，所有的配置文件和torrent恢复文件也都是暂停后的状态，然后再新建容器或重新部署，启动后再开始所有任务。
 
 - 还有一点要注意，千万不要在有下载任务时关闭或重启qbittorrent容器。
 
-**如何从其他作者的镜像转移至本镜像？**
+</details>
+
+<details>
+
+<summary markdown="span">如何从其他作者的镜像转移至本镜像</summary>
 
 - 请注意要优雅的关闭旧容器后再处理配置文件。
 
@@ -211,7 +236,11 @@ networks:
 
 - 注意在 `设置` -> `下载` 中勾选 `Torrent 完成时运行外部程序` 并填入 `dl-finish "%I"`。
 
-**遗忘登陆密码，如何重置**
+</details>
+
+<details>
+
+<summary markdown="span">遗忘登陆密码如何重置</summary>
 
 ```
 # 进入容器
@@ -224,11 +253,20 @@ curl -k -X POST -d 'json={"web_ui_username":"新的用户名","web_ui_password":
 curl -X POST -d 'json={"web_ui_username":"新的用户名","web_ui_password":"新的密码"}' http://127.0.0.1:${WEBUI_PORT}/api/v2/app/setPreferences
 ```
 
-**如何与emby, jellyfin, plex等等配合使用**
+</details>
+
+<details>
+
+<summary markdown="span">如何与emby, jellyfin, plex等等配合使用</summary>
 
 将需要配合使用的容器的环境变量PUID/PGID设置为一样的即可。
 
-**启用了其他非官方webui，导致webui打不开，如何关闭**
+</details>
+
+<details>
+
+<summary markdown="span">启用了其他非官方webui，导致webui打不开，如何关闭
+</summary>
 
 ```
 # 进入容器
@@ -241,32 +279,46 @@ curl -k -X POST -d 'json={"alternative_webui_enabled":false}' https://127.0.0.1:
 curl -X POST -d 'json={"alternative_webui_enabled":false}' http://127.0.0.1:${WEBUI_PORT}/api/v2/app/setPreferences
 ```
 
-**安装了watchtower，如何让qbittorrent不被watchtower自动更新**
+</details>
+
+<details>
+
+<summary markdown="span">安装了watchtower，如何让qbittorrent不被watchtower自动更新</summary>
 
 - 方法1：部署qbittorrent容器时，直接指定标签，如`nevinee/qbittorrent:4.3.7`；
 
 - 方法2（推荐）：在部署时在命令中添加一个label：`com.centurylinklabs.watchtower.enable=false`：
 
-docker cli：
-```
---label com.centurylinklabs.watchtower.enable=false \
-```
+    docker cli：
+    ```
+    --label com.centurylinklabs.watchtower.enable=false \
+    ```
 
-docker-compose:
-```
-    labels:
-      com.centurylinklabs.watchtower.enable: false
-```
+    docker-compose:
+    ```
+        labels:
+          com.centurylinklabs.watchtower.enable: false
+    ```
 
-**为何建议将qbittorrent安装在macvlan网络上**
+</details>
+
+<details>
+
+<summary markdown="span">为何建议将qbittorrent安装在macvlan网络上</summary>
 
 - 可以在网关上给qbittorrent所在ip独立设置限速; 
 
 - 如果有用openwrt时，可以让qbittorrent所在ip跳过代理。
 
-**将qbittorrent安装在macvlan网络上时，如何使用IYUUAutoReseed自动辅种**
+</details>
+
+<details>
+
+<summary markdown="span">将qbittorrent安装在macvlan网络上时，如何使用IYUUAutoReseed自动辅种</summary>
 
 将两个容器都安装在同一个macvlan网络上即可。
+
+</details>
 
 ## 命令
 

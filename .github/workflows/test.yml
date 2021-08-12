@@ -1,4 +1,4 @@
-name: 构建qBittorrent镜像
+name: 构建Test镜像
 
 on:
   workflow_dispatch:
@@ -7,14 +7,12 @@ on:
         description: '要构建的版本，可以为beta版，如不输入则默认去检测最新的正式版'
         required: false
         default: ''
-  repository_dispatch:
-    types: qbittorrent
 
 env:
   ## 镜像名，也是git仓库中的文件夹名
-  IMAGE_NAME: qbittorrent
+  IMAGE_NAME: test
   ## Dockerfile文件名称，在这里修改
-  DOCKERFILE_NAME: Dockerfile.GithubAction
+  DOCKERFILE_NAME: Dockerfile
 
 jobs:
   base:
@@ -54,7 +52,7 @@ jobs:
           ######################### ↑特殊部分↑ #########################
 
           ## 要构建哪些平台的镜像，在这里修改
-          MATRIX='{"architecture":["linux/386", "linux/amd64", "linux/arm64", "linux/arm/v7", "linux/arm/v6", "linux/ppc64le", "linux/s390x"]}'
+          MATRIX='{"architecture":["linux/386", "linux/amd64"]}'
 
           echo ::set-output name=full_version::${FULL_VERSION}
           echo ::set-output name=multitags::${MULTITAGS}

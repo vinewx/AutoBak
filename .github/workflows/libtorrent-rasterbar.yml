@@ -153,6 +153,51 @@ jobs:
           for tag in ${MULTITAGS}; do
             docker manifest push --purge "${DOCKERHUB_REPOSITORY}:${tag}"
           done
+      
+      -
+        ## 参考https://github.com/xaynetwork/xaynet/blob/master/.github/workflows/dockerhub-cleanup.yml
+        name: Setup Hub-tool
+        env:
+          DHUSER: ${{ secrets.DOCKER_USERNAME }}
+          DHTOKEN: ${{ secrets.DOCKER_PASSWORD }}
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          echo "Install hub-tool ..."
+          ver_hub_tool=$(curl -s https://api.github.com/repos/docker/hub-tool/releases/latest | jq -r .name)
+          wget -q https://github.com/docker/hub-tool/releases/download/${ver_hub_tool}/hub-tool-linux-amd64.tar.gz -O /tmp/hub-tool-linux-amd64.tar.gz
+          tar xzvf /tmp/hub-tool-linux-amd64.tar.gz --strip-components 1 -C /tmp hub-tool/hub-tool
+          sudo chmod +x /tmp/hub-tool
+          mkdir -pv -m 700 ~/.docker
+          chmod -v 600 ~/.docker/config.json
+          echo -ne "ewogICJ1c2VybmFtZSI6ICJESFVTRVIiLAogICJwYXNzd29yZCI6ICJESFRPS0VOIgp9Cg==" | base64 -d > /tmp/auth.json
+          echo -ne "ewogICJhdXRocyI6IHsKICAgICJodWItdG9vbCI6IHsKICAgICAgImF1dGgiOiAiREhVU0VSVE9LRU4iCiAgICB9LAogICAgImh1Yi10b29sLXJlZnJlc2gtdG9rZW4iOiB7CiAgICAgICJhdXRoIjogIkRIVVNFUiIKICAgIH0sCiAgICAiaHViLXRvb2wtdG9rZW4iOiB7CiAgICAgICJhdXRoIjogIkRIVVNFUiIsCiAgICAgICJpZGVudGl0eXRva2VuIjogIkpXVFRPS0VOIgogICAgfQogIH0KfQoK" | base64 -d > ~/.docker/config.json
+          RUSERTOKEN=$(echo -ne "${DHUSER}:${DHTOKEN}" | base64 -w0)
+          RUSER=$(echo -ne "${DHUSER}:" | base64 -w0)
+          RTOKEN=$(echo -ne "${DHTOKEN}" | base64 -w0)
+          sed -i -e "s,DHUSERTOKEN,${RUSERTOKEN},g" -e "s,DHUSER,${RUSER},g" -e "s,DHTOKEN,${RTOKEN},g" /tmp/auth.json ~/.docker/config.json
+          JWT=$(curl -s -XPOST "https://hub.docker.com/v2/users/login" -H "Content-Type:application/json" -d "@/tmp/auth.json" | jq -r .token)
+          sed -i -e "s,JWTTOKEN,${JWT},g" ~/.docker/config.json
+
+      -
+        name: Delete Unwanted Tags
+        run: |
+          arches="arm-v6 arm-v7 arm64 amd64 386 ppc64le s390x"
+          DOCKERHUB_REPOSITORY="${{ secrets.DOCKER_USERNAME }}/${IMAGE_NAME}"
+          tags=$(/tmp/hub-tool tag ls ${DOCKERHUB_REPOSITORY} | awk '{if (NR>1){print $1}}')
+          for tag in $tags; do
+            for arch in $arches; do
+              if [[ ${tag} == ${DOCKERHUB_REPOSITORY}:*-${arch} ]]; then
+                /tmp/hub-tool tag rm --verbose -f $tag
+              fi
+            done
+          done
+      
+      -
+        name: Logout Docker Hub-tool
+        if: always()
+        run: |
+          rm -rf /tmp/auth.json ~/.docker/config.json
+          /tmp/hub-tool logout
 
   notify:
     needs: [base, build, maintain]

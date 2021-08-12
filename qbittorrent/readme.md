@@ -50,6 +50,12 @@
 |  21 | DL_FINISH_NOTIFY        | true          | 默认会在下载完成时向设定的通知渠道发送种子下载完成的通知消息，如不想收此类通知，则输入`false` |
 |  22 | TRACKER_ERROR_COUNT_MIN | 3             | 可以设置的值：正整数。在检测到tracker出错的种子数量超过这个阈值时，给设置的通知渠道发送通知。4.3.7+可用。 |
 
+## 尚在测试中的内容
+
+以下功能已集成在beta版的qbittorrent中，在下一个正式版qbittorrent发布时会整合进去。
+
+- 增加`del-unseed-dir`脚本，用途：可以删除指定文件夹下没有在qbittorrent客户端中做种或下载的子文件夹/子文件，直接运行`docker exec -it qbittorrent del-unseed-dir`即可，由用户自己确认是否删除检测出来的子文件夹。
+
 ## 创建
 
 **点击下列每种部署方式可展开详情。**
@@ -321,6 +327,10 @@ curl -X POST -d 'json={"alternative_webui_enabled":false}' http://127.0.0.1:${WE
 
 ## 命令
 
+<details>
+
+<summary markdown="span"><b>随cron或在下载完成时自动运行的命令，点击本文字可展开详情</b></summary>
+
 ```
 # 发送通知
 docker exec qbittorrent notify "测试消息标题" "测试消息通知内容"
@@ -339,13 +349,26 @@ docker exec qbittorrent health-check
 
 # 检查所有种子的tracker状态是否有问题，如有问题，给该种子添加一个 TrackerError 的标签，如未修改CRON_TRACKER_ERROR，则会每4小时跑一次
 docker exec qbittorrent tracker-error
+```
 
+</details>
+
+<details open>
+
+<summary markdown="span"><b>需要手动运行的命令</b></summary>
+
+```
 # 查看qbittorrent日志，也可以直接在portainer控制台中看到
 docker logs -f qbittorrent
 
-# 批量修改tracker
+# 批量修改tracker，4.3.7+可用
 docker exec -it qbittorrent change-tracker
+
+# 删除指定文件夹下没有在qbittorrent客户端中做种或下载的子文件夹/子文件，由用户自己确认是否删除检测出来的子文件夹/子文件，目前只集成在beta版中
+docker exec -it qbittorrent del-unseed-dir
 ```
+
+</details>
 
 ## 说明
 

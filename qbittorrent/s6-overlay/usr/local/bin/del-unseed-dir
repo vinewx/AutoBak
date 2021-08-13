@@ -9,8 +9,8 @@ echo -e "本脚本用来检测指定文件夹下，所有子文件夹/子文件�
 echo -e "注意：检测只针对指定文件夹的下一级文件夹/文件，不会检测再下一级的文件夹/文件以及更底层的文件夹/文件。\n"
 read -p "请输入容器内你想检测的文件夹路径，请注意是容器内的绝对路径（形如 /data/downloads）：" detect_path
 if [[ -d $detect_path && $detect_path == /* ]]; then
-    find $detect_path -maxdepth 1 > $list_detect_path
-    path_sum=$(( $(cat /tmp/detect_path.list | wc -l) - 1 ))
+    find $detect_path -mindepth 1 -maxdepth 1 > $list_detect_path
+    path_sum=$(cat $list_detect_path | wc -l)
     echo -e "\n将要检测的路径是：$detect_path，该路径下共有 $path_sum 个子文件夹/子文件。\n"
 else
     echo -e "\n在本容器内，路径 $detect_path 不存在，退出脚本。\n"

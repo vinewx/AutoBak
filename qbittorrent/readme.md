@@ -54,7 +54,7 @@
 
 以下功能已集成在beta版的qbittorrent中，在下一个正式版qbittorrent发布时会整合进去。
 
-- 增加`del-unseed-dir`脚本，用途：可以删除指定文件夹下没有在qbittorrent客户端中做种或下载的子文件夹/子文件，直接运行`docker exec -it qbittorrent del-unseed-dir`即可，由用户自己确认是否删除检测出来的子文件夹。
+- 增加`del-unseed-dir`脚本，直接运行`docker exec -it qbittorrent del-unseed-dir`即可，用途：检测用户指定的文件夹下没有在qbittorrent客户端中做种或下载的子文件夹/子文件，并由用户确认是否删除。
 
 ## 创建
 
@@ -364,7 +364,7 @@ docker logs -f qbittorrent
 # 批量修改tracker，4.3.7+可用
 docker exec -it qbittorrent change-tracker
 
-# 删除指定文件夹下没有在qbittorrent客户端中做种或下载的子文件夹/子文件，由用户自己确认是否删除检测出来的子文件夹/子文件，目前只集成在beta版中
+# 检测指定文件夹下没有在qbittorrent客户端中做种或下载的子文件夹/子文件，由用户确认是否删除检测出来的子文件夹/子文件，目前只集成在beta版中
 docker exec -it qbittorrent del-unseed-dir
 ```
 

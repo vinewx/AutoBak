@@ -212,12 +212,15 @@ jobs:
       -
         name: Delete Unwanted Tags
         run: |
-          arches="arm-v6 arm-v7 arm64 amd64 386 ppc64le s390x"
           DOCKERHUB_REPOSITORY="${{ secrets.DOCKER_USERNAME }}/${IMAGE_NAME}"
-          tags=$(/tmp/hub-tool tag ls ${DOCKERHUB_REPOSITORY} | awk '{if (NR>1){print $1}}')
-          for tag in $tags; do
-            for arch in $arches; do
-              if [[ ${tag} == ${DOCKERHUB_REPOSITORY}:*-${arch} ]]; then
+          FULL_VERSION="${{ needs.base.outputs.full_version }}"
+          MATRIX='${{ needs.base.outputs.matrix }}'
+          ALL_ARCH=( $(echo ${MATRIX} | jq -r .architecture[] | perl -pe '{s|linux/||g; s|/|-|g}') )
+          TAGS=( $(/tmp/hub-tool tag ls --format json ${DOCKERHUB_REPOSITORY} | jq -r .[].Name) )
+          
+          for tag in ${TAGS[@]}; do
+            for arch in ${ALL_ARCH[@]}; do
+              if [[ ${tag} == ${DOCKERHUB_REPOSITORY}:${FULL_VERSION}-${arch} ]]; then
                 /tmp/hub-tool tag rm --verbose -f $tag
               fi
             done

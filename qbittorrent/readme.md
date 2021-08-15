@@ -10,14 +10,18 @@
 - 体积小，默认中文UI，默认东八区时区。
 - 多标签可用，形如`latest` `4` `4.x` `4.x.x` `4.x.xbetax`，均是多平台标签，可用平台：`amd64` `386` `arm/v6` `arm/v7` `arm64` `ppc64le` `s390x`。
 
+## 说明
+
+- Dockerfile以及原代码请见：https://github.com/nevinen/dockerfiles/blob/master/qbittorrent
+
 ## 更新日志
 
-| Date       | qBittorrent | libtorrent | alpine | 备注 |
-| :-:        | :-:         | :-:        | :-:    | -    |
-| 2021-06-08 | 4.3.5       | 1.2.13     | 3.13   |      |
-| 2021-06-17 | 4.3.5       | 1.2.14     | 3.14   | 默认不再安装python，需要开关打开才安装 |
-| 2021-06-28 | 4.3.6       | 1.2.14     | 3.14   | 优化自动分类和tracker错误检查时的资源占用 |
-| 2021-08-04 | 4.3.7       | 1.2.14     | 3.14   | 1. 增加5个环境变量控制开关，详见[环境变量清单](#环境变量清单)；<br>2. 增加批量修改tracker的功能，详见[命令](#命令)；<br>3. 增加在运行`dl-finish "%I"`时调用自定义脚本的功能，详见[相关问题](#相关问题)；<br>4. 修复其他小问题。 |
+| Date     | qBittorrent | libtorrent | alpine | 备注 |
+| :-:      | :-:         | :-:        | :-:    | -    |
+| 20210608 | 4.3.5       | 1.2.13     | 3.13.5 |      |
+| 20210617 | 4.3.5       | 1.2.14     | 3.14.0 | 默认不再安装python，需要开关打开才安装 |
+| 20210628 | 4.3.6       | 1.2.14     | 3.14.0 | 优化自动分类和tracker错误检查时的资源占用 |
+| 20210804 | 4.3.7       | 1.2.14     | 3.14.0 | 1. 增加5个环境变量控制开关，详见[环境变量清单](#环境变量清单)；<br>2. 增加批量修改tracker的功能，详见[命令](#命令)；<br>3. 增加在运行`dl-finish "%I"`时调用自定义脚本的功能，详见[相关问题](#相关问题)；<br>4. 修复其他小问题。 |
 
 ## 环境变量清单
 
@@ -370,10 +374,6 @@ docker exec -it qbittorrent del-unseed-dir
 
 </details>
 
-## 说明
-
-- Dockerfile、s6脚本、构建脚本以及构建日志请见：https://github.com/nevinen/dockerfiles/blob/master/qbittorrent
-
 ## 参考
 
 - [crazymax/qbittorrent](https://hub.docker.com/r/crazymax/qbittorrent) , 参考了Dockerfile; 
@@ -384,6 +384,6 @@ docker exec -it qbittorrent del-unseed-dir
 
 ## 问题反馈
 
-请在 [这里](https://github.com/nevinen/dockerfiles/issues) 提交。看到这里的人都是真爱，点个赞再走。
+请在 [这里](https://github.com/nevinen/dockerfiles/issues) 提交。
 
 [![dockeri.co](http://dockeri.co/image/nevinee/qbittorrent)](https://registry.hub.docker.com/nevinee/qbittorrent/)

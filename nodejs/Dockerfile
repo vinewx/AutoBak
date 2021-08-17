@@ -11,6 +11,8 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
        bash \
        s6-overlay \
        nodejs \
+       npm \
+       yarn \
        openssl \
        coreutils \
        moreutils \

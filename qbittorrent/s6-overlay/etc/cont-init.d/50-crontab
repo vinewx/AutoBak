@@ -13,11 +13,30 @@ set_crontab() {
         CRON_TRACKER_ERROR="52 */4 * * *"
     fi
 
+    local i
+    if [[ ${CRON_ALTER_LIMITS} ]]; then
+        cron_alter_limits_on_all=$(echo "${CRON_ALTER_LIMITS}" | awk -F '|' '{print $1}')
+        cron_alter_limits_on_sum=$(echo "${cron_alter_limits_on_all}" | awk -F ':' '{print NF}')
+        task_alter_limits_on=""
+        for ((i = 1; i <= $cron_alter_limits_on_sum; i++)); do
+            cron_on_tmp=$(echo "${cron_alter_limits_on_all}" | awk -v var=$i -F ':' '{print $var}')
+            task_alter_limits_on="$task_alter_limits_on\\n$cron_on_tmp alter-limits on"
+        done
+
+        cron_alter_limits_off_all=$(echo "${CRON_ALTER_LIMITS}" | awk -F '|' '{print $2}')
+        cron_alter_limits_off_sum=$(echo "${cron_alter_limits_off_all}" | awk -F ':' '{print NF}')
+        task_alter_limits_off=""
+        for ((i = 1; i <= $cron_alter_limits_off_sum; i++)); do
+            cron_off_tmp=$(echo "${cron_alter_limits_off_all}" | awk -v var=$i -F ':' '{print $var}')
+            task_alter_limits_off="$task_alter_limits_off\\n$cron_off_tmp alter-limits off"
+        done
+    fi
+
     echo "Set crontab to system..."
     if [[ $ENABLE_AUTO_CATEGORY != false ]]; then
-        echo -e "${CRON_HEALTH_CHECK} health-check\n${CRON_AUTO_CATEGORY} auto-cat -a\n${CRON_TRACKER_ERROR} tracker-error" | crontab -
+        echo -e "${CRON_HEALTH_CHECK} health-check\n${CRON_AUTO_CATEGORY} auto-cat -a\n${CRON_TRACKER_ERROR} tracker-error\n${task_alter_limits_on}\n${task_alter_limits_off}" | crontab -
     else
-        echo -e "${CRON_HEALTH_CHECK} health-check\n${CRON_TRACKER_ERROR} tracker-error" | crontab -
+        echo -e "${CRON_HEALTH_CHECK} health-check\n${CRON_TRACKER_ERROR} tracker-error\n${task_alter_limits_on}\n${task_alter_limits_off}" | crontab -
     fi
 }
 

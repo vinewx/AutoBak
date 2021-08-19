@@ -1,0 +1,17 @@
+#!/bin/bash
+
+main() {
+    local toggle=$1
+    . /usr/local/bin/share
+    current_mode=$($cmd_curl $api_url_base/transfer/speedLimitsMode)
+
+    if [[ $toggle == off && $current_mode == 1 ]]; then
+        echo "(N) $(date +'%Y-%m-%dT%H:%M:%S') - [$(basename $0)] 关闭备用限速..."
+        $cmd_curl $api_url_base/transfer/toggleSpeedLimitsMode
+    elif [[ $toggle == on && $current_mode == 0 ]]; then
+        echo "(N) $(date +'%Y-%m-%dT%H:%M:%S') - [$(basename $0)] 启用备用限速..."
+        $cmd_curl $api_url_base/transfer/toggleSpeedLimitsMode
+    fi
+}
+
+main "$@"

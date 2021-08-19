@@ -4,12 +4,12 @@
 FROM nevinee/libtorrent-rasterbar:1 AS builder
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
     && apk add --update --no-cache \
-       autoconf \
-       automake \
        boost-dev \
        build-base \
-       libtool \
        qt5-qttools-dev \
+       git \
+       cmake \
+       samurai \
     && rm -rf /tmp/* /var/cache/apk/*
 ARG QBITTORRENT_VERSION
 COPY qBittorrent-${QBITTORRENT_VERSION} /tmp/qBittorrent
@@ -17,6 +17,7 @@ RUN cd /tmp/qBittorrent \
     && cmake \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_CXX_STANDARD=17 \
+        -DVERBOSE_CONFIGURE=OFF \
         -DSTACKTRACE=OFF \
         -DDBUS=OFF \
         -DGUI=OFF \

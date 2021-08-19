@@ -27,7 +27,11 @@
 
 在下一节的创建命令中，包括已经提及的`WEBUI_PORT`, `BT_PORT`, `TZ`在内，总共以下环境变量，请根据需要参考创建命令中`WEBUI_PORT` `BT_PORT` `TZ`的形式自行补充添加到创建命令中。
 
-*注：默认值的含义是，你不设置这个环境变量为其他值，那么程序就自动使用默认值*
+*注：默认值的含义是，你不设置这个环境变量为其他值，那么程序就自动使用默认值。*
+
+<details>
+
+<summary markdown="span"><b>点击这里展开环境变量列表</b></summary>
 
 | 序号 | 变量名                   | 默认值         | 说明 |
 | :-: | :-:                     | :-:           | -    |
@@ -54,11 +58,19 @@
 |  21 | DL_FINISH_NOTIFY        | true          | 默认会在下载完成时向设定的通知渠道发送种子下载完成的通知消息，如不想收此类通知，则输入`false` |
 |  22 | TRACKER_ERROR_COUNT_MIN | 3             | 可以设置的值：正整数。在检测到tracker出错的种子数量超过这个阈值时，给设置的通知渠道发送通知。4.3.7+可用。 |
 
+</details>
+
 ## 尚在测试中的内容
 
 以下功能已集成在beta版的qbittorrent中，在下一个正式版qbittorrent发布时会整合进去。
 
 - 增加`del-unseed-dir`脚本，直接运行`docker exec -it qbittorrent del-unseed-dir`即可，用途：检测用户指定的文件夹下没有在qbittorrent客户端中做种或下载的子文件夹/子文件，并由用户确认是否删除。
+
+以下环境变量已集成在beta版的qbittorrent中，在下一个正式版qbittorrent发布时会整合进去。
+
+| 序号 | 变量名                   | 默认值         | 说明 |
+| :-: | :-:                     | :-:           | -    |
+|  1  | CRON_ALTER_LIMITS       |               | 仅针对有多时段限速场景时使用，如：`0 5 * * *:0 18 * * *\|0 8 * * *:0 22 * * *`，`\|`前面的cron是启用“备用速度限制”的时间点，`\|`后面的cron是关闭“备用速度限制”的时间点。需要在一天中多次启用“备用速度限制”的，以`:`分隔每个cron，可以任意个cron，需要多次关闭“备用速度限制”的同样以`:`分隔每个cron。 |
 
 ## 创建
 
@@ -329,6 +341,22 @@ curl -X POST -d 'json={"alternative_webui_enabled":false}' http://127.0.0.1:${WE
 
 </details>
 
+<details>
+
+<summary markdown="span"><b>如何使用`CRON_ALTER_LIMITS`</b></summary>
+
+- 当前仅beta版可用，正式版要等到qbittorrent发布下一个稳定版时集成。
+
+- 请在qbittorrent客户端中先设置好”备用速度限制“。
+
+- 该功能主要提供给多时段限速场景使用，如：`0 5 * * *:0 18 * * *|0 8 * * *:0 22 * * *`，`|`前面的cron是启用“备用速度限制”的时间点，`|`后面的cron是关闭“备用速度限制”的时间点。需要在一天中多次启用“备用速度限制”的，以`:`分隔每个cron，可以任意个cron，需要多次关闭“备用速度限制”的同样以`:`分隔每个cron。
+
+- 比如需要在周一至周五的5:00-8:00、17:30-23:30，以及周六、周日的9:00-23:30进行限速，那么可以设置`CRON_ALTER_LIMITS`为`0 5 * * 1-5:30 17 * * 1-5:0 9 * * 0,6|0 8 * * 1-5:30 23 * * *`。
+
+- 比如需要在周一至周五的17:30-22:00，以及周六、周日的8:30-23:00进行限速，那么可以设置`CRON_ALTER_LIMITS`为`30 17 * * 1-5:30 8 * * 0,6|0 22 * * 1-5:0 23 * * 0,6`。
+
+</details>
+
 ## 命令
 
 <details>
@@ -353,6 +381,10 @@ docker exec qbittorrent health-check
 
 # 检查所有种子的tracker状态是否有问题，如有问题，给该种子添加一个 TrackerError 的标签，如未修改CRON_TRACKER_ERROR，则会每4小时跑一次
 docker exec qbittorrent tracker-error
+
+## 启用可关闭“备用速度限制”，目前仅集成在beta版中，在下一个正式版会集成进去
+docker exec qbittorrent alter-limits on    # 启用“备用速度限制”
+docker exec qbittorrent alter-limits off   # 关闭“备用速度限制”
 ```
 
 </details>

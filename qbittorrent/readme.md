@@ -1,6 +1,6 @@
 ## 特点
 
-- 自动按`tracker`分类。
+- 自动按`tracker`分类（也可以选择关闭自动分类）。
 - 下载完成发送通知，可选途径：钉钉（[效果图](https://gitee.com/evine/dockerfiles/raw/master/qbittorrent/pictures/notify.png)）, Telegram, ServerChan, 爱语飞飞, PUSHPLUS推送加；搭配RSS功能（[RSS教程](https://www.jianshu.com/p/54e6137ea4e3)）自动下载效果很好；下载完成后还可以补充运行你的自定义脚本。
 - 故障时发送通知，可选途径同上。
 - 按设定的cron检查tracker状态，如发现种子的tracker状态有问题，将给该种子添加`TrackerError`的标签，方便筛选；如果tracker出错数量超过设定的阈值，给设定渠道发送通知。
@@ -224,6 +224,14 @@ networks:
 
 <details>
 
+<summary markdown="span"><b>使用此镜像会导致封号吗</b></summary>
+
+此镜像未修改qbittorrent客户端官方任何信息，在和pt站tracker服务器交互时反馈的一切信息均是qbittorrent官方原版反馈的信息，此镜像只是基于qbittorrent额外增加了一些脚本而已。增加的脚本全部代码在 [这里](https://github.com/nevinen/dockerfiles/tree/master/qbittorrent) 可以查看，不会因为使用此镜像导致pt账号被封。
+
+</details>
+
+<details>
+
 <summary markdown="span"><b>如何在运行 dl-finish "%I" 时调用自定义脚本</b></summary>
 
 - 此功能可用版本：4.3.7+；
@@ -343,7 +351,7 @@ curl -X POST -d 'json={"alternative_webui_enabled":false}' http://127.0.0.1:${WE
 
 <details>
 
-<summary markdown="span"><b>如何使用`CRON_ALTER_LIMITS`</b></summary>
+<summary markdown="span"><b>如何使用 CRON_ALTER_LIMITS 这个环境变量</b></summary>
 
 - 当前仅beta版可用，正式版要等到qbittorrent发布下一个稳定版时集成。
 

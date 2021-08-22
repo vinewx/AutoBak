@@ -90,20 +90,20 @@
 
 ```
 docker run -dit \
-  -v $PWD/qbittorrent:/data \
-  -e TZ="Asia/Shanghai" \
+  -v $PWD/qbittorrent:/data `# 冒号左边请修改为你想在本地保存的路径，这个路径用来保存你个人的配置文件` \
+  -e TZ="Asia/Shanghai" `# 时区` \
   -e WEBUI_PORT=8080 `# WEBUI控制端口，可自定义` \
   -e BT_PORT=34567   `# BT监听端口，可自定义` \
-  -p 8080:8080       `# 冒号左右一致，要同WEBUI_PORT` \
-  -p 34567:34567/tcp `# 冒号左右一致，要同BT_PORT` \
-  -p 34567:34567/udp `# 冒号左右一致，要同BT_PORT` \
+  -p 8080:8080       `# 冒号左右一致，要和同WEBUI_PORT一致` \
+  -p 34567:34567/tcp `# 冒号左右一致，要和BT_PORT一致` \
+  -p 34567:34567/udp `# 冒号左右一致，要和BT_PORT一致` \
   --restart always \
   --name qbittorrent \
   --hostname qbittorrent \
   nevinee/qbittorrent
 ```
 
-- 除`TZ` `WEBUI_PORT` `BT_PORT`这三个环境变量外，其他环境变量请根据[环境变量清单](#环境变量清单)自行添加。
+- 除`TZ` `WEBUI_PORT` `BT_PORT`这三个环境变量外，其他环境变量请根据[环境变量清单](#环境变量清单)按照`-e 变量名="变量值" \`的形式自行添加在命令中。
 
 - armv7设备如若无法使用网络，可能是seccomp问题，详见 [这里](https://wiki.alpinelinux.org/wiki/Release_Notes_for_Alpine_3.13.0#time64_requirements)。可以增加`--security-opt seccomp=unconfined` 来解决。
 
@@ -130,15 +130,15 @@ services:
     network_mode: bridge
     hostname: qbitorrent
     volumes:
-      - ./data:/data
+      - ./data:/data      # 配置保存目录
     environment:
       - WEBUI_PORT=8080   # WEBUI控制端口，可自定义
       - BT_PORT=34567     # BT监听端口，可自定义
       - TZ=Asia/Shanghai  # 时区
     ports:
-      - 8080:8080        # 冒号左右一致，必须同WEBUI_PORT
-      - 34567:34567      # 冒号左右一致，必须同BT_PORT
-      - 34567:34567/udp  # 冒号左右一致，必须同BT_PORT
+      - 8080:8080        # 冒号左右一致，必须同WEBUI_PORT一样
+      - 34567:34567      # 冒号左右一致，必须同BT_PORT一样
+      - 34567:34567/udp  # 冒号左右一致，必须同BT_PORT一样
     #security_opt:       # armv7设备请解除这两行注释
       #- seccomp=unconfined
 ```
@@ -177,7 +177,7 @@ networks:
     external: true
 ```
 
-- 除`TZ` `WEBUI_PORT` `BT_PORT`这三个环境变量外，其他环境变量请根据[环境变量清单](#环境变量清单)自行添加。
+- 除`TZ` `WEBUI_PORT` `BT_PORT`这三个环境变量外，其他环境变量请根据[环境变量清单](#环境变量清单)自行添加在environment中。
 
 - armv7设备如若无法使用网络，可能是seccomp问题，详见 [这里](https://wiki.alpinelinux.org/wiki/Release_Notes_for_Alpine_3.13.0#time64_requirements)。
 
@@ -189,10 +189,10 @@ networks:
 
 ## 目录说明
 
-只需要映射一个目录给容器（当然你要映射其他目录作为下载目录也没有问题），在映射的容器内的`/data`文件夹下会有以下文件夹：
+如果按照上述任何一种部署方式，在映射的目录下会有以下文件夹：
 
 ```
-/data
+.                             # 基础路径在容器内为/data，在宿主机上为你自己设置的路径
 ├── cache                     # qbittorrent的缓存目录
 ├── certs                     # 用来存放ssl证书，默认是空的，可另外使用acme.sh来申请ssl证书
 ├── config                    # 所有的配置文件保存目录

@@ -1,19 +1,3 @@
-## 特点
-
-- 自动按`tracker`分类（也可以选择关闭自动分类）。
-- 下载完成发送通知，可选途径：钉钉（[效果图](https://gitee.com/evine/dockerfiles/raw/master/qbittorrent/pictures/notify.png)）, Telegram, ServerChan, 爱语飞飞, PUSHPLUS推送加；搭配RSS功能（[RSS教程](https://www.jianshu.com/p/54e6137ea4e3)）自动下载效果很好；下载完成后还可以补充运行你的自定义脚本。
-- 故障时发送通知，可选途径同上。
-- 按设定的cron检查tracker状态，如发现种子的tracker状态有问题，将给该种子添加`TrackerError`的标签，方便筛选；如果tracker出错数量超过设定的阈值，给设定渠道发送通知。
-- 自带批量修改tracker的功能，可精确匹配也可模糊匹配。
-- 日志输出到docker控制台，可从portainer查看。
-- `python`为可选安装项，设置为`true`就自动安装。
-- 体积小，默认中文UI，默认东八区时区。
-- 多标签可用，形如`latest` `4` `4.x` `4.x.x` `4.x.xbetax`，均是多平台标签，可用平台：`amd64` `386` `arm/v6` `arm/v7` `arm64` `ppc64le` `s390x`。
-
-## 说明
-
-- Dockerfile以及原代码请见：https://github.com/nevinen/dockerfiles/blob/master/qbittorrent
-
 ## 更新日志
 
 | Date     | qBittorrent | libtorrent | alpine | 备注 |
@@ -27,7 +11,11 @@
 
 在下一节的创建命令中，包括已经提及的`WEBUI_PORT`, `BT_PORT`, `TZ`在内，总共以下环境变量，请根据需要参考创建命令中`WEBUI_PORT` `BT_PORT` `TZ`的形式自行补充添加到创建命令中。
 
-*注：默认值的含义是，你不设置这个环境变量为其他值，那么程序就自动使用默认值。*
+*注1：默认值的含义是，你不设置这个环境变量为其他值，那么程序就自动使用默认值。*
+
+*注2：所有定时任务cron类的环境变量（以`CRON`这四个字母开头的）在docker cli中请用一对双引号引起来，在docker-compose中不要增加引号。*
+
+*注3：所有环境变量你都可以不设置，并不影响qbittorrent的使用，但如果你想用得更爽，你就根据你的需要设置。*
 
 <details>
 
@@ -48,14 +36,14 @@
 |  11 | TG_PROXY_USER           |               | 给TG机器人发送消息的代理的用户名和密码，当设置了`TG_PROXY_ADDRESS`后可以设置此值，格式为：`<用户名>:<密码>`，形如：`admin:password`，如没有可不设置。4.3.7+可用。 |
 |  12 | DD_BOT_TOKEN            |               | 通知渠道钉钉，如需使用需要和 DD_BOT_SECRET 同时赋值，机器人设置中webhook链接`access_token=`后面的字符串（不含`=`以及`=`之前的字符）。 |
 |  13 | DD_BOT_SECRET           |               | 通知渠道钉钉，如需使用需要和 DD_BOT_TOKEN 同时赋值，机器人设置中**只启用**`加签`，加签的秘钥，形如：`SEC1234567890abcdefg`。 |
-|  14 | IYUU_TOKEN              |               | 通知渠道爱语飞飞，通过 http://iyuu.cn/ 获取。 |
-|  15 | SCKEY                   |               | 通知渠道ServerChan，通过 http://sc.ftqq.com/3.version 获取。 |
-|  16 | PUSHPLUS_TOKEN          |               | 通知渠道PUSH PLUS，填入其token，详见：http://www.pushplus.plus 。4.3.7+可用。 |
-|  17 | CRON_HEALTH_CHECK       | 12 * * * *    | 宕机检查的cron，在设定的cron运行时如发现qbittorrent-nox宕机了，则向设置的通知渠道发送通知，在docker cli中请用一对双引号引起来，在docker-compose中不要增加引号。 |
-|  18 | CRON_AUTO_CATEGORY      | 32 */2 * * *  | 自动分类的cron，在设定的cron将所有种子按tracker分类，在docker cli中请用一对双引号引起来，在docker-compose中不要增加引号。对于种子很多的大户人家，建议把cron频率修改低一些，一天一次即可。 |
-|  19 | CRON_TRACKER_ERROR      | 52 */4 * * *  | 检查tracker状态是否健康的cron，在设定的cron将检查所有种子的tracker状态，如果有问题就打上`TrackerError`的标签，在docker cli中请用一对双引号引起来，在docker-compose中不要增加引号。对于种子很多的大户人家，建议把cron频率修改低一些，一天一次即可。 |
+|  14 | IYUU_TOKEN              |               | 通知渠道爱语飞飞，通过 [这里](http://iyuu.cn) 获取。 |
+|  15 | SCKEY                   |               | 通知渠道ServerChan，通过 [这里](http://sc.ftqq.com/3.version) 获取。 |
+|  16 | PUSHPLUS_TOKEN          |               | 通知渠道PUSH PLUS，填入其token，详见 [这里](http://www.pushplus.plus)，4.3.7+可用。 |
+|  17 | CRON_HEALTH_CHECK       | 12 * * * *    | 宕机检查的cron，在设定的cron运行时如发现qbittorrent-nox宕机了，则向设置的通知渠道发送通知。 |
+|  18 | CRON_AUTO_CATEGORY      | 32 */2 * * *  | 自动分类的cron，在设定的cron将所有种子按tracker分类。对于种子很多的大户人家，建议把cron频率修改低一些，一天一次即可。此cron可以由`ENABLE_AUTO_CATEGORY`关闭，关闭后不生效。 |
+|  19 | CRON_TRACKER_ERROR      | 52 */4 * * *  | 检查tracker状态是否健康的cron，在设定的cron将检查所有种子的tracker状态，如果有问题就打上`TrackerError`的标签。对于种子很多的大户人家，建议把cron频率修改低一些，一天一次即可。 |
 |  20 | ENABLE_AUTO_CATEGORY    | true          | 是否自动分类，默认自动分类，如不想自动分类，请设置为`false`。4.3.7+可用。 |
-|  21 | DL_FINISH_NOTIFY        | true          | 默认会在下载完成时向设定的通知渠道发送种子下载完成的通知消息，如不想收此类通知，则输入`false` |
+|  21 | DL_FINISH_NOTIFY        | true          | 默认会在下载完成时向设定的通知渠道发送种子下载完成的通知消息，如不想收此类通知，则设置为`false`。 |
 |  22 | TRACKER_ERROR_COUNT_MIN | 3             | 可以设置的值：正整数。在检测到tracker出错的种子数量超过这个阈值时，给设置的通知渠道发送通知。4.3.7+可用。 |
 
 </details>
@@ -70,7 +58,8 @@
 
 | 序号 | 变量名                   | 默认值         | 说明 |
 | :-: | :-:                     | :-:           | -    |
-|  1  | CRON_ALTER_LIMITS       |               | 仅针对有多时段限速场景时使用，如：`0 5 * * *:0 18 * * *\|0 8 * * *:0 22 * * *`，`\|`前面的cron是启用“备用速度限制”的时间点，`\|`后面的cron是关闭“备用速度限制”的时间点。需要在一天中多次启用“备用速度限制”的，以`:`分隔每个cron，可以任意个cron，需要多次关闭“备用速度限制”的同样以`:`分隔每个cron。 |
+|  1  | CRON_ALTER_LIMITS       |               | 启动和关闭“备用速度限制“，主要针对多时段限速场景，详见 [相关问题](#相关问题) 一节“如何使用 CRON_ALTER_LIMITS 这个环境变量” |
+|  2  | CRON_IYUU_HELP          |               | IYUUAutoReseed辅助任务，自动重校验、自动恢复做种，详见 [相关问题](#相关问题) 一节“如何使用 CRON_IYUU_HELP 这个环境变量” |
 
 ## 创建
 
@@ -363,6 +352,27 @@ curl -X POST -d 'json={"alternative_webui_enabled":false}' http://127.0.0.1:${WE
 
 - 比如需要在周一至周五的17:30-22:00，以及周六、周日的8:30-23:00进行限速，那么可以设置`CRON_ALTER_LIMITS`为`30 17 * * 1-5:30 8 * * 0,6|0 22 * * 1-5:0 23 * * 0,6`。
 
+- 在docker cli中请使用一对双引号引起来，在docker-compose.yml中请勿增加引号。
+
+</details>
+
+<details>
+
+<summary markdown="span"><b>如何使用 CRON_IYUU_HELP 这个环境变量</b></summary>
+
+- 当前仅beta版可用，正式版要等到qbittorrent发布下一个稳定版时集成。
+
+- 在设置的时间点实现以下功能：
+
+  1. 检查下载清单（就是qbittorrent筛选“下载”的清单），检测该清单中处于暂停状态、并且下载完成率为0%（辅种的种子在校验前也是0%）的种子，将这些种子请求重新校验。**已经请求过校验并且完成率大于0%的种子不会再次校验。**
+  2. 检查暂停清单（就是qbittorrent筛选“暂停”的清单），检测该清单中100%下载完成/100%校验通过的种子，将这些种子恢复做种。**校验未通过不达100%完成率的种子不会启动，仍然保持暂停状态。**
+
+- 配合IYUUAutoReseed，将CRON_IYUU_HELP设置在IYUUAutoReseed自动辅种任务的cron以后，并运行若干次即可（因为校验比较费时，所以要多次运行）。
+
+- 比如你IYUUAutoReseed辅种任务的cron是`22 7,19 * * *`，你想从辅种任务5分钟后，每10分钟运行一次，共运行4次，那么可以设置CRON_IYUU_HELP为：`27-57/10 7,19 * * *`。
+
+- 在docker cli中请使用一对双引号引起来，在docker-compose.yml中请勿增加引号。
+
 </details>
 
 ## 命令
@@ -393,6 +403,9 @@ docker exec qbittorrent tracker-error
 ## 启用可关闭“备用速度限制”，目前仅集成在beta版中，在下一个正式版会集成进去
 docker exec qbittorrent alter-limits on    # 启用“备用速度限制”
 docker exec qbittorrent alter-limits off   # 关闭“备用速度限制”
+
+## IYUUAutoReseed辅助任务，自动重校验、自动恢复做种，目前仅集成在beta版中，由CRON_IYUU_HELP设置的cron来调用
+docker exec qbittorrent iyuu-help
 ```
 
 </details>
@@ -425,5 +438,3 @@ docker exec -it qbittorrent del-unseed-dir
 ## 问题反馈
 
 请在 [这里](https://github.com/nevinen/dockerfiles/issues) 提交。
-
-[![dockeri.co](http://dockeri.co/image/nevinee/qbittorrent)](https://registry.hub.docker.com/nevinee/qbittorrent/)

@@ -21,4 +21,4 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         repository: nevinee/qbittorrent
-        readme-filepath: ./qbittorrent/readme.md
+        readme-filepath: ./qbittorrent/dockerhub.md

@@ -4,7 +4,7 @@
 - 下载完成发送通知，可选途径：钉钉（[效果图](https://gitee.com/evine/dockerfiles/raw/master/qbittorrent/pictures/notify.png)）, Telegram, ServerChan, 爱语飞飞, PUSHPLUS推送加；搭配RSS功能（[RSS教程](https://www.jianshu.com/p/54e6137ea4e3)）自动下载效果很好；下载完成后还可以补充运行你的自定义脚本。
 - 故障时发送通知，可选途径同上。
 - 按设定的cron检查tracker状态，如发现种子的tracker状态有问题，将给该种子添加`TrackerError`的标签，方便筛选；如果tracker出错数量超过设定的阈值，给设定渠道发送通知。
-- 自带批量修改tracker的功能，可精确匹配也可模糊匹配。
+- **一些辅助功能：批量修改tracker；检测指定文件夹下未在qbittorrent客户端中做种的文件夹/文件；配合IYUUAutoReseed实现自动重新校验、自动恢复做种；检测局域网指定设备是否在线，如在线则自动启用“备用速度限制”等等。**
 - 日志输出到docker控制台，可从portainer查看。
 - `python`为可选安装项，设置为`true`就自动安装。
 - 体积小，默认中文UI，默认东八区时区。
@@ -75,8 +75,9 @@
 
 | 序号 | 变量名                   | 默认值         | 说明 |
 | :-: | :-:                     | :-:           | -    |
-|  1  | CRON_ALTER_LIMITS       |               | 启动和关闭“备用速度限制“，主要针对多时段限速场景，详见 [相关问题](#相关问题) 一节“如何使用 CRON_ALTER_LIMITS 这个环境变量” |
-|  2  | CRON_IYUU_HELP          |               | IYUUAutoReseed辅助任务，自动重校验、自动恢复做种，详见 [相关问题](#相关问题) 一节“如何使用 CRON_IYUU_HELP 这个环境变量” |
+|  1  | MONITOR_IP              |               | 可设置为局域网设备的ip，多个ip以半角空格分隔，形如：`192.168.1.5 192.168.1.9 192.168.1.20`。本变量作用：当检测到这些设置的ip中有任何一个ip在线时（检测频率为每分钟），自动启用qbittorent客户端的“备用速度限制”，“备用速度限制”需要事先设置好限制速率。建议在路由器上给需要设置的设备固定ip。在docker cli中请使用一对双引号引起来，在docker-compose中不要使用引用。
+|  2  | CRON_ALTER_LIMITS       |               | 启动和关闭“备用速度限制“的cron，主要针对多时段限速场景，当设置了`MONITOR_IP`时本变量的cron不生效（因为会冲突）。详见 [相关问题](#相关问题) 一节“如何使用 CRON_ALTER_LIMITS 这个环境变量” |
+|  3  | CRON_IYUU_HELP          |               | IYUUAutoReseed辅助任务的cron，自动重校验、自动恢复做种，详见 [相关问题](#相关问题) 一节“如何使用 CRON_IYUU_HELP 这个环境变量” |
 
 ## 创建
 
@@ -98,18 +99,18 @@
 docker run -dit \
   -v $PWD/qbittorrent:/data `# 冒号左边请修改为你想在本地保存的路径，这个路径用来保存你个人的配置文件` \
   -e TZ="Asia/Shanghai" `# 时区` \
-  -e WEBUI_PORT=8080 `# WEBUI控制端口，可自定义` \
-  -e BT_PORT=34567   `# BT监听端口，可自定义` \
-  -p 8080:8080       `# 冒号左右一致，要和同WEBUI_PORT一致` \
-  -p 34567:34567/tcp `# 冒号左右一致，要和BT_PORT一致` \
-  -p 34567:34567/udp `# 冒号左右一致，要和BT_PORT一致` \
+  -e WEBUI_PORT="8080"  `# WEBUI控制端口，可自定义` \
+  -e BT_PORT="34567"    `# BT监听端口，可自定义` \
+  -p 8080:8080          `# 冒号左右一样，要和WEBUI_PORT一致` \
+  -p 34567:34567/tcp    `# 冒号左右一样，要和BT_PORT一致` \
+  -p 34567:34567/udp    `# 冒号左右一样，要和BT_PORT一致` \
   --restart always \
   --name qbittorrent \
   --hostname qbittorrent \
   nevinee/qbittorrent
 ```
 
-- 除`TZ` `WEBUI_PORT` `BT_PORT`这三个环境变量外，其他环境变量请根据[环境变量清单](#环境变量清单)按照`-e 变量名="变量值" \`的形式自行添加在命令中。
+- 除`TZ` `WEBUI_PORT` `BT_PORT`这三个环境变量外，如果你还需要使用其他环境变量，请根据[环境变量清单](#环境变量清单)按照`-e 变量名="变量值" \`的形式自行添加在创建命令中。
 
 - armv7设备如若无法使用网络，可能是seccomp问题，详见 [这里](https://wiki.alpinelinux.org/wiki/Release_Notes_for_Alpine_3.13.0#time64_requirements)。可以增加`--security-opt seccomp=unconfined` 来解决。
 
@@ -361,9 +362,11 @@ curl -X POST -d 'json={"alternative_webui_enabled":false}' http://127.0.0.1:${WE
 
 - 当前仅beta版可用，正式版要等到qbittorrent发布下一个稳定版时集成。
 
-- 请在qbittorrent客户端中先设置好”备用速度限制“。
+- 该功能主要提供给多时段限速场景使用，请在qbittorrent客户端中先设置好”备用速度限制“的限制速率。
 
-- 该功能主要提供给多时段限速场景使用，如：`0 5 * * *:0 18 * * *|0 8 * * *:0 22 * * *`，`|`前面的cron是启用“备用速度限制”的时间点，`|`后面的cron是关闭“备用速度限制”的时间点。需要在一天中多次启用“备用速度限制”的，以`:`分隔每个cron，可以任意个cron，需要多次关闭“备用速度限制”的同样以`:`分隔每个cron。
+- 当设置了有效的`MONITOR_IP`时，`CRON_ALTER_LIMITS`的cron不生效（因为会冲突）。
+
+- 设置形式如：`0 5 * * *:0 18 * * *|0 8 * * *:0 22 * * *`，`|`前面的cron是启用“备用速度限制”的时间点，`|`后面的cron是关闭“备用速度限制”的时间点。需要在一天中多次启用“备用速度限制”的，以`:`分隔每个cron，可以任意个cron，需要多次关闭“备用速度限制”的同样以`:`分隔每个cron。
 
 - 比如需要在周一至周五的5:00-8:00、17:30-23:30，以及周六、周日的9:00-23:30进行限速，那么可以设置`CRON_ALTER_LIMITS`为`0 5 * * 1-5:30 17 * * 1-5:0 9 * * 0,6|0 8 * * 1-5:30 23 * * *`。
 
@@ -396,7 +399,7 @@ curl -X POST -d 'json={"alternative_webui_enabled":false}' http://127.0.0.1:${WE
 
 <details>
 
-<summary markdown="span"><b>随cron或在下载完成时自动运行的命令，点击本文字可展开详情</b></summary>
+<summary markdown="span"><b>由设置的cron或在下载完成时自动运行的命令，点击本文字可展开详情</b></summary>
 
 ```
 # 发送通知
@@ -416,6 +419,9 @@ docker exec qbittorrent health-check
 
 # 检查所有种子的tracker状态是否有问题，如有问题，给该种子添加一个 TrackerError 的标签，如未修改CRON_TRACKER_ERROR，则会每4小时跑一次
 docker exec qbittorrent tracker-error
+
+# 检测MONITOR_IP设置的ip是否在线，如有任何一个ip在线，则启用“备用速度限制”，目前仅集成在beta版中，在下一个正式版会集成进去
+docker exec qbittorrent detect-ip
 
 ## 启用可关闭“备用速度限制”，目前仅集成在beta版中，在下一个正式版会集成进去
 docker exec qbittorrent alter-limits on    # 启用“备用速度限制”
@@ -452,8 +458,8 @@ docker exec -it qbittorrent del-unseed-dir
 
 - [arpaulnet/s6-overlay-stage](https://hub.docker.com/r/arpaulnet/s6-overlay-stage), 学习了多平台镜像制作方法。
 
-## 问题反馈
+## 问题反馈、意见建议
 
-请在 [这里](https://github.com/nevinen/dockerfiles/issues) 提交。
+如有使用上的问题，或者有其他好的功能建议，请在 [这里](https://github.com/nevinen/dockerfiles/issues) 提交。
 
 [![dockeri.co](http://dockeri.co/image/nevinee/qbittorrent)](https://registry.hub.docker.com/nevinee/qbittorrent/)

@@ -68,7 +68,7 @@ notify_serverchan () {
     [[ $SCKEY == SCT* ]] && serverchan_url=https://sctapi.ftqq.com/${SCKEY}.send || serverchan_url=https://fcqq.com/${SCKEY}.send
     send_result=$(curl -Ssk -X POST -d "text=${title}&desp=${desp}" $serverchan_url)
     if [[ $(echo "$send_result" | jq .code) -eq 0 ]]; then
-        echo -e "(N) $(date +'%Y-%m-%dT%H:%M:%S') - [$(basename $0)] 发送Server酱通知成功...\n"
+        echo -e "(N) $(date +'%Y-%m-%dT%H:%M:%S') - [$(basename $0)] 发送Server酱通知成功\n"
     else
         echo -e "(W) $(date +'%Y-%m-%dT%H:%M:%S') - [$(basename $0)] 发送Server酱通知失败，错误消息：$send_result\n"
     fi
@@ -84,7 +84,7 @@ notify_pushplus() {
 
     send_result=$(curl -Ssk -X POST -H "Content-Type: application/json" -d "$message" $pushplus_url)
     if [[ $(echo $send_result | jq .code) -eq 200 ]]; then
-        echo -e "(N) $(date +'%Y-%m-%dT%H:%M:%S') - [$(basename $0)] 发送PushPlus通知成功...\n"
+        echo -e "(N) $(date +'%Y-%m-%dT%H:%M:%S') - [$(basename $0)] 发送PushPlus通知成功\n"
     else
         echo -e "(W) $(date +'%Y-%m-%dT%H:%M:%S') - [$(basename $0)] 发送PushPlus通知失败，错误消息：$(echo $send_result | jq -r .msg)\n"
     fi

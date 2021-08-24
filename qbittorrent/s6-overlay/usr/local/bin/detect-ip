@@ -9,12 +9,7 @@ if [[ $MONITOR_IP ]]; then
             break
         fi
     done
-
-    if [[ $alter_limits_switch == on ]]; then
-        alter-limits on
-    elif [[ $alter_limits_switch == off ]]; then
-        alter-limits off
-    fi
+    alter-limits $alter_limits_switch
 else
     echo "未设置 MONITOR_IP 环境变量，退出"
     exit 1

@@ -1,4 +1,6 @@
 /log
+*/logs/
 /libtorrent-rasterbar/libtorrent-*
 /qbittorrent/qBittorrent-*
+/qbittorrent/buildx*
 *.version

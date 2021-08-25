@@ -1,7 +1,7 @@
 ## 特点
 
-- 自动按`tracker`分类（也可以选择关闭自动分类）。
-- 下载完成发送通知，可选途径：钉钉（[效果图](https://gitee.com/evine/dockerfiles/raw/master/qbittorrent/pictures/notify.png)）, Telegram, ServerChan, 爱语飞飞, PUSHPLUS推送加；搭配RSS功能（[RSS教程](https://www.jianshu.com/p/54e6137ea4e3)）自动下载效果很好；下载完成后还可以补充运行你的自定义脚本。
+- 自动按`tracker`分类（可以选择关闭）。
+- 下载完成发送通知（可以选择关闭），可选途径：钉钉（[效果图](https://gitee.com/evine/dockerfiles/raw/master/qbittorrent/pictures/notify.png)）, Telegram, ServerChan, 爱语飞飞, PUSHPLUS推送加；搭配RSS功能（[RSS教程](https://www.jianshu.com/p/54e6137ea4e3)）自动下载效果很好；下载完成后还可以补充运行你的自定义脚本。
 - 故障时发送通知，可选途径同上。
 - 按设定的cron检查tracker状态，如发现种子的tracker状态有问题，将给该种子添加`TrackerError`的标签，方便筛选；如果tracker出错数量超过设定的阈值，给设定渠道发送通知。
 - **一些辅助功能：批量修改tracker；检测指定文件夹下未做种的子文件夹/文件；配合IYUU自动重新校验和自动恢复做种；指定设备上线时自动限速；多时段限速等等。**
@@ -112,7 +112,7 @@ docker run -dit \
 
 - 除`TZ` `WEBUI_PORT` `BT_PORT`这三个环境变量外，如果你还需要使用其他环境变量，请根据[环境变量清单](#环境变量清单)按照`-e 变量名="变量值" \`的形式自行添加在创建命令中。
 
-- armv7设备如若无法使用网络，可能是seccomp问题，详见 [这里](https://wiki.alpinelinux.org/wiki/Release_Notes_for_Alpine_3.13.0#time64_requirements)。可以增加`--security-opt seccomp=unconfined` 来解决。
+- armv7设备如若无法使用网络，可能是seccomp问题，详见 [这里](https://wiki.alpinelinux.org/wiki/Release_Notes_for_Alpine_3.13.0#time64_requirements)。可以在创建命令中增加一行`--security-opt seccomp=unconfined \` 来解决。
 
 - 创建完成后请访问`http://<IP>:<WEBUI_PORT>`来作进一步设置，初始用户名密码：`admin/adminadmin`。如要在公网访问，请务必修改用户名和密码。
 

@@ -187,7 +187,7 @@ jobs:
           destination_container_repo: ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}
           provider: dockerhub
           readme_file: ./${{ env.IMAGE_NAME }}/readme.md
-          short_description: ${{ env.IMAGE_NAME }} ${{ needs.base.outputs.full_version }}：全平台, 下载完成通知, 自动分类, tracker错误标记, 批量修改tracker, 宕机通知, 日志显示
+          short_description: ${{ env.IMAGE_NAME }} ${{ needs.base.outputs.full_version }}：全平台,下载完成通知,自动分类,IYUU辅助,tracker错误标记,批量修改tracker,设备上线自动限速,多时段限速等等
 
       -
         ## 参考https://github.com/xaynetwork/xaynet/blob/master/.github/workflows/dockerhub-cleanup.yml

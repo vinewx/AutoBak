@@ -32,7 +32,7 @@
 
 *注2：所有定时任务cron类的环境变量（以`CRON`这四个字母开头的）在docker cli中请用一对双引号引起来，在docker-compose中不要增加引号。*
 
-*注3：所有环境变量你都可以不设置，并不影响qbittorrent的使用，但如果你想用得更爽，你就根据你的需要设置。*
+*注3：**所有环境变量你都可以不设置，并不影响qbittorrent的使用**，但如果你想用得更爽，你就根据你的需要设置。*
 
 <details>
 
@@ -63,21 +63,15 @@
 |  21 | CRON_AUTO_CATEGORY      | 32 */2 * * *  | 自动分类的cron，在设定的cron将所有种子按tracker分类。对于种子很多的大户人家，建议把cron频率修改低一些，一天一次即可。此cron可以由`ENABLE_AUTO_CATEGORY`关闭，关闭后不生效。 |
 |  22 | CRON_TRACKER_ERROR      | 52 */4 * * *  | 检查tracker状态是否健康的cron，在设定的cron将检查所有种子的tracker状态，如果有问题就打上`TrackerError`的标签。对于种子很多的大户人家，建议把cron频率修改低一些，一天一次即可。 |
 
-</details>
-
-## 尚在测试中的内容
-
-以下功能已集成在beta版的qbittorrent中，在下一个正式版qbittorrent发布时会整合进去。
-
-- 增加`del-unseed-dir`脚本，直接运行`docker exec -it qbittorrent del-unseed-dir`即可，用途：检测用户指定的文件夹下没有在qbittorrent客户端中做种或下载的子文件夹/子文件，并由用户确认是否删除。
-
-以下环境变量已集成在beta版的qbittorrent中，在下一个正式版qbittorrent发布时会整合进去。
+**以下环境变量已集成在`nevinee/qbittorrent:beta`标签中，在下一个正式版qbittorrent发布时会整合进`nevinee/qbittorrent:latest`标签。**
 
 | 序号 | 变量名                   | 默认值         | 说明 |
 | :-: | :-:                     | :-:           | -    |
-|  1  | MONITOR_IP              |               | 可设置为局域网设备的ip，多个ip以半角空格分隔，形如：`192.168.1.5 192.168.1.9 192.168.1.20`。本变量作用：当检测到这些设置的ip中有任何一个ip在线时（检测频率为每分钟），自动启用qbittorent客户端的“备用速度限制”，“备用速度限制”需要事先设置好限制速率。建议在路由器上给需要设置的设备固定ip。在docker cli中请使用一对双引号引起来，在docker-compose中不要使用引用。
+|  1  | MONITOR_IP              |               | 可设置为局域网设备的ip，多个ip以半角空格分隔，形如：`192.168.1.5 192.168.1.9 192.168.1.20`。本变量作用：当检测到这些设置的ip中有任何一个ip在线时（检测频率为每分钟），自动启用qbittorent客户端的“备用速度限制”，如果都不在线就关闭“备用速度限制”。“备用速度限制”需要事先设置好限制速率，建议在路由器上给需要设置的设备固定ip。在docker cli中请使用一对双引号引起来，在docker-compose中不要使用引用。
 |  2  | CRON_ALTER_LIMITS       |               | 启动和关闭“备用速度限制“的cron，主要针对多时段限速场景，当设置了`MONITOR_IP`时本变量的cron不生效（因为会冲突）。详见 [相关问题](#相关问题) 一节“如何使用 CRON_ALTER_LIMITS 这个环境变量” |
 |  3  | CRON_IYUU_HELP          |               | IYUUAutoReseed辅助任务的cron，自动重校验、自动恢复做种，详见 [相关问题](#相关问题) 一节“如何使用 CRON_IYUU_HELP 这个环境变量” |
+
+</details>
 
 ## 创建
 
@@ -382,7 +376,7 @@ curl -X POST -d 'json={"alternative_webui_enabled":false}' http://127.0.0.1:${WE
 
 - 当前仅beta版可用，正式版要等到qbittorrent发布下一个稳定版时集成。
 
-- 在设置的时间点实现以下功能：
+- 在设置的时间点执行`iyuu-help`命令，实现以下功能：
 
   1. 检查下载清单（就是qbittorrent筛选“下载”的清单），检测该清单中处于暂停状态、并且下载完成率为0%（辅种的种子在校验前也是0%）的种子，将这些种子请求重新校验。**已经请求过校验并且完成率大于0%的种子不会再次校验。**
   2. 检查暂停清单（就是qbittorrent筛选“暂停”的清单），检测该清单中100%下载完成/100%校验通过的种子，将这些种子恢复做种。**校验未通过不达100%完成率的种子不会启动，仍然保持暂停状态。**
@@ -405,7 +399,7 @@ curl -X POST -d 'json={"alternative_webui_enabled":false}' http://127.0.0.1:${WE
 # 发送通知
 docker exec qbittorrent notify "测试消息标题" "测试消息通知内容"
 
-# 将所有种子按tracker进行分类，cron（CRON_AUTO_CATEGORY）如未修改会自动每两小时运行一次
+# 将所有种子按tracker进行分类，由CRON_AUTO_CATEGOR设置的cron来调用
 docker exec qbittorrent auto-cat -a
 
 # 将指定种子按tracker进行分类，会自动在下载完成时运行一次（由 dl-finish <hash> 命令调用）
@@ -414,20 +408,20 @@ docker exec qbittorrent auto-cat -i <hash>   # hash可以在种子详情中的"�
 # 下载完成时将种子分类，并发送通知，已经在配置文件中填好了
 docker exec qbittorrent dl-finish <hash>     # hash可以在种子详情中的"普通"标签页上查看到
 
-# 检查qbittorrent是否宕机，如宕机则发送通知，容器本身也会按设置的cron（CRON_HEALTH_CHECK）来运行此命令
+# 检查qbittorrent是否宕机，如宕机则发送通知，由CRON_HEALTH_CHECK设置的cron来调用
 docker exec qbittorrent health-check
 
-# 检查所有种子的tracker状态是否有问题，如有问题，给该种子添加一个 TrackerError 的标签，如未修改CRON_TRACKER_ERROR，则会每4小时跑一次
+# 检查所有种子的tracker状态是否有问题，如有问题，给该种子添加一个 TrackerError 的标签，由CRON_TRACKER_ERROR设置的cron来调用
 docker exec qbittorrent tracker-error
 
-# 检测MONITOR_IP设置的ip是否在线，如有任何一个ip在线，则启用“备用速度限制”，目前仅集成在beta版中，在下一个正式版会集成进去
+# 每分钟检测MONITOR_IP设置的ip是否在线，如有任何一个ip在线，则启用“备用速度限制”，目前仅集成在beta标签中，在下一个正式版会集成进去
 docker exec qbittorrent detect-ip
 
-## 启用可关闭“备用速度限制”，目前仅集成在beta版中，在下一个正式版会集成进去
+## 启用可关闭“备用速度限制”，目前仅集成在beta标签中，在下一个正式版会集成进去，由CRON_ALTER_LIMITS设置的cron来调用
 docker exec qbittorrent alter-limits on    # 启用“备用速度限制”
 docker exec qbittorrent alter-limits off   # 关闭“备用速度限制”
 
-## IYUUAutoReseed辅助任务，自动重校验、自动恢复做种，目前仅集成在beta版中，由CRON_IYUU_HELP设置的cron来调用
+## IYUUAutoReseed辅助任务，自动重校验、自动恢复做种，目前仅集成在beta标签中，由CRON_IYUU_HELP设置的cron来调用
 docker exec qbittorrent iyuu-help
 ```
 
@@ -444,7 +438,7 @@ docker logs -f qbittorrent
 # 批量修改tracker，4.3.7+可用
 docker exec -it qbittorrent change-tracker
 
-# 检测指定文件夹下没有在qbittorrent客户端中做种或下载的子文件夹/子文件，由用户确认是否删除检测出来的子文件夹/子文件，目前只集成在beta版中
+# 检测指定文件夹下没有在qbittorrent客户端中做种或下载的子文件夹/子文件，由用户确认是否删除检测出来的子文件夹/子文件，目前只集成在beta标签中
 docker exec -it qbittorrent del-unseed-dir
 ```
 

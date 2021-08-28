@@ -193,7 +193,7 @@ networks:
 如果按照上述任何一种部署方式，在映射的目录下会有以下文件夹：
 
 ```
-.                             # 基础路径在容器内为/data，在宿主机上为你自己设置的路径
+/data                         # 基础路径在容器内为/data，下面所有文件夹均处于/data的下一层，基础路径在宿主机上为你创建容器时映射的
 ├── cache                     # qbittorrent的缓存目录
 ├── certs                     # 用来存放ssl证书，默认是空的，可另外使用acme.sh来申请ssl证书
 ├── config                    # 所有的配置文件保存目录
@@ -452,8 +452,10 @@ docker exec -it qbittorrent del-unseed-dir
 
 - [arpaulnet/s6-overlay-stage](https://hub.docker.com/r/arpaulnet/s6-overlay-stage), 学习了多平台镜像制作方法。
 
-## 问题反馈、意见建议
+## 源代码、问题反馈、意见建议
+
+全套代码见 [这里](https://github.com/nevinen/dockerfiles/qbittorrent)。
 
 如有使用上的问题，或者有其他好的功能建议，请在 [这里](https://github.com/nevinen/dockerfiles/issues) 提交。
 
-[![dockeri.co](http://dockeri.co/image/nevinee/qbittorrent)](https://registry.hub.docker.com/nevinee/qbittorrent/)
+[![dockeri.co](http://dockeri.co/image/nevinee/qbittorrent)](https://hub.docker.com/r/nevinee/qbittorrent/)

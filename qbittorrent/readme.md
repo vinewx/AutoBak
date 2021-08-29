@@ -313,6 +313,14 @@ curl -X POST -d 'json={"alternative_webui_enabled":false}' http://127.0.0.1:${WE
 
 <details>
 
+<summary markdown="span"><b>如何自动更新容器</b></summary>
+
+安装watchtower即可，详见 [这里](https://hub.docker.com/r/containrrr/watchtower)
+
+</details>
+
+<details>
+
 <summary markdown="span"><b>安装了watchtower，如何让qbittorrent不被watchtower自动更新</b></summary>
 
 - 方法1：部署qbittorrent容器时，直接指定标签，如`nevinee/qbittorrent:4.3.7`；

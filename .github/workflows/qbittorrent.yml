@@ -189,6 +189,11 @@ jobs:
           readme_file: ./${{ env.IMAGE_NAME }}/readme.md
           short_description: ${{ env.IMAGE_NAME }} ${{ needs.base.outputs.full_version }}：全平台,下载完成通知,自动分类,IYUU辅助,tracker错误标记,批量修改tracker,设备上线自动限速,多时段限速等等
 
+  deltag:
+    needs: [base, maintain]
+    runs-on: ubuntu-latest
+    name: 删除标签
+    steps:
       -
         ## 参考https://github.com/xaynetwork/xaynet/blob/master/.github/workflows/dockerhub-cleanup.yml
         name: Setup Hub-tool
@@ -236,57 +241,3 @@ jobs:
         run: |
           rm -rf /tmp/auth.json ~/.docker/config.json
           /tmp/hub-tool logout
-
-  notify:
-    needs: [base, build, maintain]
-    if: always()
-    runs-on: ubuntu-latest
-    name: 发送通知
-    steps:    
-      - 
-        name: Send All Success Notify
-        if: ${{ needs.build.result == 'success' && needs.maintain.result == 'success' }}
-        uses: zcong1993/actions-ding@master
-        with:
-          dingToken: ${{ secrets.DD_BOT_TOKEN }}
-          secret: ${{ secrets.DD_BOT_SECRET }}
-          ignoreError: true
-          body: |
-            {
-              "msgtype": "text",
-              "text": {
-                "content": "镜像构建并维护成功\n\n${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}镜像构建成功，信息维护成功\n版本：${{ needs.base.outputs.full_version }}\n链接：https://hub.docker.com/repository/docker/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}"
-              }
-            }
-
-      - 
-        name: Send Only Build Success Notify
-        if: ${{ needs.build.result == 'success' && needs.maintain.result != 'success' }}
-        uses: zcong1993/actions-ding@master
-        with:
-          dingToken: ${{ secrets.DD_BOT_TOKEN }}
-          secret: ${{ secrets.DD_BOT_SECRET }}
-          ignoreError: true
-          body: |
-            {
-              "msgtype": "text",
-              "text": {
-                "content": "镜像构建成功\n\n${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}镜像构建成功，但信息维护失败了\n版本：${{ needs.base.outputs.full_version }}\n链接：https://hub.docker.com/repository/docker/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}"
-              }
-            }
-      
-      - 
-        name: Send Failure Notify
-        if: ${{ needs.build.result == 'failure' }}
-        uses: zcong1993/actions-ding@master
-        with:
-          dingToken: ${{ secrets.DD_BOT_TOKEN }}
-          secret: ${{ secrets.DD_BOT_SECRET }}
-          ignoreError: true
-          body: |
-            {
-              "msgtype": "text",
-              "text": {
-                "content": "镜像构建失败\n\n${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}镜像构建失败\n版本：${{ needs.base.outputs.full_version }}\n链接：https://hub.docker.com/repository/docker/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}"
-              }
-            }

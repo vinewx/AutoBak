@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: '要构建的版本，可以为beta版，如不输入则默认去检测最新的正式版'
+        description: '要构建的版本，可以为beta/rc版，如不输入则默认去检测最新的正式版'
         required: false
         default: ''
   repository_dispatch:
@@ -49,7 +49,7 @@ jobs:
               MULTITAGS="${MAJOR_VERSION} ${MINOR_VERSION} ${PATCH_VERSION} ${FULL_VERSION} latest"
             fi
           else
-            MULTITAGS="${FULL_VERSION} beta"
+            MULTITAGS="${FULL_VERSION} unstable"
           fi
           ######################### ↑特殊部分↑ #########################
 

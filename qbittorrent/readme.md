@@ -12,8 +12,8 @@
 
 ## 标签
 
-- `latest`, `4.x.x`, `4.x`, `4`: qBittorrent正式发布的稳定版，其中最新的版本会额外增加`latest`标签
-- `beta`, `4.x.xbetax`: qBittorrent发布的测试版，其中最新的测试版额外增加`beta`标签
+- `latest`, `4.x.x`, `4.x`, `4`: qBittorrent正式发布的稳定版，其中最新的版本会额外增加`latest`标签，`latest`标签会在qBittorrent官方发布正式版后2小时内完成更新。
+- `beta`, `4.x.xbetax`: qBittorrent发布的测试版，其中最新的测试版额外增加`beta`标签。
 
 ## 更新日志
 
@@ -22,7 +22,8 @@
 | 20210608 | 4.3.5       | 1.2.13     | 3.13.5 |      |
 | 20210617 | 4.3.5       | 1.2.14     | 3.14.0 | 默认不再安装python，需要开关打开才安装 |
 | 20210628 | 4.3.6       | 1.2.14     | 3.14.0 | 优化自动分类和tracker错误检查时的资源占用 |
-| 20210804 | 4.3.7       | 1.2.14     | 3.14.0 | 1. 增加5个环境变量控制开关，详见[环境变量清单](#环境变量清单)；<br>2. 增加批量修改tracker的功能，详见[命令](#命令)；<br>3. 增加在运行`dl-finish "%I"`时调用自定义脚本的功能，详见[相关问题](#相关问题)。 |
+| 20210804 | 4.3.7       | 1.2.14     | 3.14.0 | 1. 增加5个环境变量控制开关，详见[环境变量清单](#环境变量清单)；<br>2. 增加批量修改 tracker的功能，详见[命令](#命令)；<br>3. 增加在运行`dl-finish %I`时运行自定义脚本的功能，详见[相关问题](#相关问题)。 |
+| 20210830 | 4.3.8       | 1.2.14     | 3.14.2 | 1. 增加3个环境变量控制开关，详见[环境变量清单](#环境变量清单)；<br>2. 增加检测指定目录未做种的子文件夹/文件功能，详见[命令](#命令)。 |
 
 ## 环境变量清单
 
@@ -62,14 +63,9 @@
 |  20 | CRON_HEALTH_CHECK       | 12 * * * *    | 宕机检查的cron，在设定的cron运行时如发现qbittorrent-nox宕机了，则向设置的通知渠道发送通知。 |
 |  21 | CRON_AUTO_CATEGORY      | 32 */2 * * *  | 自动分类的cron，在设定的cron将所有种子按tracker分类。对于种子很多的大户人家，建议把cron频率修改低一些，一天一次即可。此cron可以由`ENABLE_AUTO_CATEGORY`关闭，关闭后不生效。 |
 |  22 | CRON_TRACKER_ERROR      | 52 */4 * * *  | 检查tracker状态是否健康的cron，在设定的cron将检查所有种子的tracker状态，如果有问题就打上`TrackerError`的标签。对于种子很多的大户人家，建议把cron频率修改低一些，一天一次即可。 |
-
-**以下环境变量已集成在`nevinee/qbittorrent:beta`标签中，在下一个正式版qbittorrent发布时会整合进`nevinee/qbittorrent:latest`标签。**
-
-| 序号 | 变量名                   | 默认值         | 说明 |
-| :-: | :-:                     | :-:           | -    |
-|  1  | MONITOR_IP              |               | 可设置为局域网设备的ip，多个ip以半角空格分隔，形如：`192.168.1.5 192.168.1.9 192.168.1.20`。本变量作用：当检测到这些设置的ip中有任何一个ip在线时（检测频率为每分钟），自动启用qbittorent客户端的“备用速度限制”，如果都不在线就关闭“备用速度限制”。“备用速度限制”需要事先设置好限制速率，建议在路由器上给需要设置的设备固定ip。在docker cli中请使用一对双引号引起来，在docker-compose中不要使用引用。
-|  2  | CRON_ALTER_LIMITS       |               | 启动和关闭“备用速度限制“的cron，主要针对多时段限速场景，当设置了`MONITOR_IP`时本变量的cron不生效（因为会冲突）。详见 [相关问题](#相关问题) 一节“如何使用 CRON_ALTER_LIMITS 这个环境变量” |
-|  3  | CRON_IYUU_HELP          |               | IYUUAutoReseed辅助任务的cron，自动重校验、自动恢复做种，详见 [相关问题](#相关问题) 一节“如何使用 CRON_IYUU_HELP 这个环境变量” |
+|  23 | MONITOR_IP              |               | 可设置为局域网设备的ip，多个ip以半角空格分隔，形如：`192.168.1.5 192.168.1.9 192.168.1.20`。本变量作用：当检测到这些设置的ip中有任何一个ip在线时（检测频率为每分钟），自动启用qbittorent客户端的“备用速度限制”，如果都不在线就关闭“备用速度限制”。“备用速度限制”需要事先设置好限制速率，建议在路由器上给需要设置的设备固定ip。在docker cli中请使用一对双引号引起来，在docker-compose中不要使用引用。4.3.8+可用。 |
+|  24 | CRON_ALTER_LIMITS       |               | 启动和关闭“备用速度限制“的cron，主要针对多时段限速场景，当设置了`MONITOR_IP`时本变量的cron不生效（因为会冲突）。详见 [相关问题](#相关问题) 一节“如何使用 CRON_ALTER_LIMITS 这个环境变量”。4.3.8+可用。 |
+|  25 | CRON_IYUU_HELP          |               | IYUUAutoReseed辅助任务的cron，自动重校验、自动恢复做种，详见 [相关问题](#相关问题) 一节“如何使用 CRON_IYUU_HELP 这个环境变量”。4.3.8+可用。 |
 
 </details>
 
@@ -81,7 +77,7 @@
 
 <summary markdown="span"><b>群晖</b></summary>
 
-请见 [这里](https://gitee.com/evine/dockerfiles/blob/master/qbittorrent/dsm.md)。
+请见 [这里](https://gitee.com/evine/dockerfiles/blob/master/qbittorrent/dsm.md)。安装后访问`http://ip:8080`。
 
 </details>
 
@@ -108,7 +104,7 @@ docker run -dit \
 
 - armv7设备如若无法使用网络，可能是seccomp问题，详见 [这里](https://wiki.alpinelinux.org/wiki/Release_Notes_for_Alpine_3.13.0#time64_requirements)。可以在创建命令中增加一行`--security-opt seccomp=unconfined \` 来解决。
 
-- 创建完成后请访问`http://<IP>:<WEBUI_PORT>`来作进一步设置，初始用户名密码：`admin/adminadmin`。如要在公网访问，请务必修改用户名和密码。
+- 创建完成后请访问`http://<IP>:<WEBUI_PORT>`（如未修改，对安装机默认是`http://127.0.0.1:8080`）来作进一步设置，初始用户名密码：`admin/adminadmin`。如要在公网访问，请务必修改用户名和密码。
 
 - 如想参与qbittorrent测试工作，可以指定测试标签，如`nevinee/qbittorrent:beta`，请向qbittorrent官方反馈遇到的问题。
 
@@ -362,7 +358,7 @@ curl -X POST -d 'json={"alternative_webui_enabled":false}' http://127.0.0.1:${WE
 
 <summary markdown="span"><b>如何使用 CRON_ALTER_LIMITS 这个环境变量</b></summary>
 
-- 当前仅beta版可用，正式版要等到qbittorrent发布下一个稳定版时集成。
+- 4.3.8+可用。
 
 - 该功能主要提供给多时段限速场景使用，请在qbittorrent客户端中先设置好”备用速度限制“的限制速率。
 
@@ -382,7 +378,7 @@ curl -X POST -d 'json={"alternative_webui_enabled":false}' http://127.0.0.1:${WE
 
 <summary markdown="span"><b>如何使用 CRON_IYUU_HELP 这个环境变量</b></summary>
 
-- 当前仅beta版可用，正式版要等到qbittorrent发布下一个稳定版时集成。
+- 4.3.8+可用。
 
 - 在设置的时间点执行`iyuu-help`命令，实现以下功能：
 
@@ -422,14 +418,14 @@ docker exec qbittorrent health-check
 # 检查所有种子的tracker状态是否有问题，如有问题，给该种子添加一个 TrackerError 的标签，由CRON_TRACKER_ERROR设置的cron来调用
 docker exec qbittorrent tracker-error
 
-# 每分钟检测MONITOR_IP设置的ip是否在线，如有任何一个ip在线，则启用“备用速度限制”，目前仅集成在beta标签中，在下一个正式版会集成进去
+# 每分钟检测MONITOR_IP设置的ip是否在线，如有任何一个ip在线，则启用“备用速度限制”，4.3.8+可用。
 docker exec qbittorrent detect-ip
 
-## 启用可关闭“备用速度限制”，目前仅集成在beta标签中，在下一个正式版会集成进去，由CRON_ALTER_LIMITS设置的cron来调用
+## 启用可关闭“备用速度限制”，4.3.8+可用，由CRON_ALTER_LIMITS设置的cron来调用
 docker exec qbittorrent alter-limits on    # 启用“备用速度限制”
 docker exec qbittorrent alter-limits off   # 关闭“备用速度限制”
 
-## IYUUAutoReseed辅助任务，自动重校验、自动恢复做种，目前仅集成在beta标签中，由CRON_IYUU_HELP设置的cron来调用
+## IYUUAutoReseed辅助任务，自动重校验、自动恢复做种，4.3.8+可用，由CRON_IYUU_HELP设置的cron来调用
 docker exec qbittorrent iyuu-help
 ```
 
@@ -446,9 +442,19 @@ docker logs -f qbittorrent
 # 批量修改tracker，4.3.7+可用
 docker exec -it qbittorrent change-tracker
 
-# 检测指定文件夹下没有在qbittorrent客户端中做种或下载的子文件夹/子文件，由用户确认是否删除检测出来的子文件夹/子文件，目前只集成在beta标签中
+# 检测指定文件夹下没有在qbittorrent客户端中做种或下载的子文件夹/子文件，由用户确认是否删除，4.3.8+可用
 docker exec -it qbittorrent del-unseed-dir
 ```
+
+## 效果图
+
+![notify](https://gitee.com/evine/dockerfiles/raw/master/qbittorrent/pictures/notify.png)
+
+![iyuu-help](https://gitee.com/evine/dockerfiles/raw/master/qbittorrent/pictures/iyuu-help.png)
+
+![change-tracker](https://gitee.com/evine/dockerfiles/raw/master/qbittorrent/pictures/change-tracker.png)
+
+![del-unseed-dir](https://gitee.com/evine/dockerfiles/raw/master/qbittorrent/pictures/del-unseed-dir.png)
 
 </details>
 

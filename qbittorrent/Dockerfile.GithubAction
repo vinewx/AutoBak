@@ -40,8 +40,8 @@ RUN echo "Copy to /out" \
 FROM alpine
 ENV QBITTORRENT_HOME="/home/qbittorrent" \
     TZ="Asia/Shanghai" \
-    PUID="1500" \
-    PGID="1500" \
+    PUID="1000" \
+    PGID="100" \
     LANG=zh_CN.UTF-8 \
     SHELL=/bin/bash \
     PS1="\u@\h:\w \$ "
@@ -58,7 +58,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
     && rm -rf /tmp/* /var/cache/apk/* \
     && ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime \
     && echo "${TZ}" > /etc/timezone \
-    && useradd qbittorrent -u ${PUID} -U -m -d ${QBITTORRENT_HOME} -s /sbin/nologin
+    && useradd qbittorrent -u ${PUID} -g ${PGID} -m -d ${QBITTORRENT_HOME} -s /sbin/nologin
 COPY --from=builder /out /
 COPY s6-overlay /
 WORKDIR /data

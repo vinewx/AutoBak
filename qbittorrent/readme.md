@@ -16,8 +16,8 @@
 
 | 标签  | 备注 |
 | :-:  | -   |
-| `latest`<br>`4.x.x`<br>`4.x`<br>`4` | qBittorrent正式发布的稳定版，其中最新的版本会额外增加`latest`标签，`latest`标签会在qBittorrent官方发布正式版后2小时内完成更新。|
-| `unstable`<br>`4.x.xbetax`<br>`4.x.xrcx` | qBittorrent发布的测试版，其中最新的测试版额外增加`unstable` 标签，已取消`beta`标签。
+| `latest` `4.x.x` `4.x` `4` | qBittorrent正式发布的稳定版，其中最新的版本会额外增加`latest`标签，最新的v4版额外增加`4`标签，`4.x`同理。`latest`标签会在qBittorrent官方发布正式版后2小时内完成更新。|
+| `unstable` `4.x.xbetax` | qBittorrent发布的测试版，其中最新的测试版额外增加`unstable` 标签。 |
 
 ## 更新日志
 

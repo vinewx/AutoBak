@@ -2,7 +2,7 @@
 
 cd /IYUU
 
-if [[ ! -d /IYUU/.git || ! -f /IYUU/.env ]]; then
+if [[ ! -d .git ]]; then
     git clone https://github.com/ledccn/IYUUPlus.git /tmp/IYUU
     #git clone https://gitee.com/ledc/iyuuplus.git /tmp/IYUU
     find /tmp/IYUU -mindepth 1 -maxdepth 1 | xargs -I {} cp -r {} /IYUU
@@ -13,8 +13,12 @@ else
     git pull
 fi
 
-if [ ! -s .env ]; then
-    cp .env.example .env
+if [[ ! -s .env ]]; then
+    cp -f .env.example .env
+fi
+
+if [ ! -d db ]; then
+    mkdir db
 fi
 
 if [[ -z ${CRON_UPDATE} ]]; then
@@ -30,5 +34,5 @@ echo "${CRON_UPDATE} cd /IYUU && git fetch --all && git reset --hard origin/mast
 echo "当前crontab如下："
 crontab -l
 
-php /IYUU/start.php start -d
+php start.php start -d
 crond -f

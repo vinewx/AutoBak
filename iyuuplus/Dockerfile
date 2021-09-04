@@ -36,7 +36,6 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/' /etc/apk/repositories 
         php7-zip \
         php7-zlib \
         php7-xml \
-    && git clone https://github.com/ledccn/IYUUPlus.git /IYUU \
     && git config --global pull.ff only \
     && echo -e "upload_max_filesize=100M\npost_max_size=108M\nmemory_limit=1024M\ndate.timezone=${TZ}" > /etc/php7/conf.d/99-overrides.ini \
     && ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime \

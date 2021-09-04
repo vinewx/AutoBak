@@ -257,6 +257,8 @@ networks:
 
 <summary markdown="span"><b>如何从其他作者的镜像转移至本镜像</b></summary>
 
+-  **如果启用了ssl/https，请先在原qbittorrent的webui中禁用，或者将`qBittorrent.conf`中`WebUI\HTTPS\Enabled=true`改为`WebUI\HTTPS\Enabled=false`。**
+
 - 请注意要优雅的关闭旧容器后再处理配置文件。
 
 - 进入原来容器的映射目录下，在config下分别找到`qBittorrent.conf` `qBittorrent-data.conf` `rss`，在data下找到`BT_backup`，然后将其参考上面的目录树放在新容器的映射目录下，然后在创建容器时，保证新容器中的下载文件的保存路径和旧容器一致，并新建容器即可。
@@ -265,7 +267,7 @@ networks:
 
 - 注意新容器的PUID/PGID和要旧容器保持一致。
 
-- 注意在 `设置` -> `下载` 中勾选 `Torrent 完成时运行外部程序` 并填入 `dl-finish "%I"`。
+- 注意在 `设置` -> `下载` 中勾选 `Torrent 完成时运行外部程序` 并填入 `dl-finish "%I"`，如需要https要重新设置证书路径。
 
 </details>
 
@@ -472,7 +474,7 @@ docker exec -it qbittorrent del-unseed-dir
 
 ## 源代码、问题反馈、意见建议
 
-全套代码见 [这里](https://github.com/nevinen/dockerfiles/qbittorrent)。
+全套代码见 [这里](https://github.com/nevinen/dockerfiles/tree/master/qbittorrent)。
 
 如有使用上的问题，或者有其他好的功能建议，请在 [这里](https://github.com/nevinen/dockerfiles/issues) 提交。
 

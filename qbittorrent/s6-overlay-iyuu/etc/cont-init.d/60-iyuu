@@ -30,7 +30,7 @@ set_iyuu() {
         rm -rf /iyuu/db 2>/dev/null
         ln -sf ${IYUU_DB} /iyuu/db
     fi
-    chown -R root:users /data/iyuu_db
+    chown -R root:users ${IYUU_DB}
 
     ## 补充IYUU更新脚本并重启程序的的cron
     minute=$(($RANDOM % 60))
@@ -48,7 +48,7 @@ set_iyuu() {
     if [[ ! -s ${CLIENT_FILE} ]]; then
         cur_timestamp=$(( $(date +'%s') * 1000 + $RANDOM % 10 * 100 + $RANDOM % 10 * 10 + $RANDOM % 10 ))
         PID="pid$$_${cur_timestamp}"
-        CLIENT_INFO="ewogICJQSUQiOiB7CiAgICAidHlwZSI6ICJxQml0dG9ycmVudCIsCiAgICAibmFtZSI6ICJsb2NhbGhvc3QiLAogICAgImhvc3QiOiAiSE9TVCIsCiAgICAiZW5kcG9pbnQiOiAiIiwKICAgICJ1c2VybmFtZSI6ICJhbm9ueW1vdXMiLAogICAgInBhc3N3b3JkIjogImFub255bW91cyIsCiAgICAiZG9ja2VyIjogIm9uIiwKICAgICJkZWZhdWx0IjogIm9uIiwKICAgICJyb290X2ZvbGRlciI6ICJvbiIsCiAgICAid2F0Y2giOiAiL2RhdGEvZGF0YS93YXRjaCIsCiAgICAiZG93bmxvYWRzRGlyIjogIi9kYXRhL2RhdGEvZG93bmxvYWRzIiwKICAgICJCVF9iYWNrdXAiOiAiL2RhdGEvZGF0YS9CVF9iYWNrdXAiLAogICAgInV1aWQiOiAiUElEIgogIH0KfQ=="
+        CLIENT_INFO="ewogICJQSUQiOiB7CiAgICAidHlwZSI6ICJxQml0dG9ycmVudCIsCiAgICAibmFtZSI6ICJsb2NhbGhvc3QiLAogICAgImhvc3QiOiAiSE9TVCIsCiAgICAiZW5kcG9pbnQiOiAiIiwKICAgICJ1c2VybmFtZSI6ICJhbm9ueW1vdXMiLAogICAgInBhc3N3b3JkIjogImFub255bW91cyIsCiAgICAiZG9ja2VyIjogIm9uIiwKICAgICJkZWZhdWx0IjogIm9uIiwKICAgICJyb290X2ZvbGRlciI6ICJvbiIsCiAgICAid2F0Y2giOiAiL2RhdGEvd2F0Y2giLAogICAgImRvd25sb2Fkc0RpciI6ICIvZGF0YS9kb3dubG9hZHMiLAogICAgIkJUX2JhY2t1cCI6ICIvZGF0YS9kYXRhL0JUX2JhY2t1cCIsCiAgICAidXVpZCI6ICJQSUQiCiAgfQp9"
         echo -en "$CLIENT_INFO" | base64 -d > ${CLIENT_FILE}
         chmod 666 ${CLIENT_FILE}
         sed -i "{s#PID#$PID#g; s#HOST#$HOST#g;}" ${CLIENT_FILE}

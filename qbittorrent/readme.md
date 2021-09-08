@@ -122,6 +122,7 @@ docker run -dit \
   -e TZ="Asia/Shanghai" `# 时区` \
   -e PUID="1000"        `# 输入id -u可查询，群晖必须改` \
   -e PGID="100"         `# 输入id -g可查询，群晖必须改` \
+  -e IYUU_REPO_URL="https://gitee.com/ledc/iyuuplus.git" \
   -e WEBUI_PORT="8080"  `# WEBUI控制端口，可自定义` \
   -e BT_PORT="34567"    `# BT监听端口，可自定义` \
   -p 8080:8080          `# 冒号左右一样，要和WEBUI_PORT一致，命令中的3个8080要改一起改` \
@@ -166,6 +167,7 @@ services:
       - WEBUI_PORT=8080   # WEBUI控制端口，可自定义
       - BT_PORT=34567     # BT监听端口，可自定义
       - TZ=Asia/Shanghai  # 时区
+      - IYUU_REPO_URL=https://gitee.com/ledc/iyuuplus.git
       - PUID=1000         # 输入id -u可查询，群晖必须改
       - PGID=100          # 输入id -g可查询，群晖必须改
     ports:

@@ -38,15 +38,7 @@ jobs:
           fi
 
           if [[ ${FULL_VERSION} == ${LATEST_VERSION} ]]; then
-            PATCH_VERSION=$(printf "${FULL_VERSION}" | cut -d '.' -f 1-3)
-            MINOR_VERSION=$(printf "${FULL_VERSION}" | cut -d '.' -f 1-2)
-            MAJOR_VERSION=$(printf "${FULL_VERSION}" | cut -d '.' -f 1)
-
-            if [[ ${FULL_VERSION} == ${PATCH_VERSION} ]]; then
-              MULTITAGS="${MAJOR_VERSION} ${MINOR_VERSION} ${FULL_VERSION} latest"
-            else
-              MULTITAGS="${MAJOR_VERSION} ${MINOR_VERSION} ${PATCH_VERSION} ${FULL_VERSION} latest"
-            fi
+            MULTITAGS="${FULL_VERSION} latest"
           else
             MULTITAGS="${FULL_VERSION} unstable"
           fi
@@ -132,6 +124,7 @@ jobs:
   maintain:
     needs: [base, build]
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     name: 信息维护
     steps:
       - 
@@ -189,6 +182,7 @@ jobs:
   deltag:
     needs: [base, maintain]
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     name: 删除标签
     steps:
       -
@@ -243,8 +237,8 @@ jobs:
     needs: [base, build, maintain]
     if: endsWith(needs.base.outputs.multitags, 'latest')
     runs-on: ubuntu-latest
-    name: 并行构建IYUU
     timeout-minutes: 10
+    name: 并行构建IYUU
     steps:
       - 
         name: Checkout

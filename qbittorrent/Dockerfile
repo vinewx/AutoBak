@@ -38,10 +38,12 @@ RUN echo "Copy to /out" \
     && cp /usr/local/bin/qbittorrent-nox /out/usr/bin
 
 FROM alpine
-ENV QBITTORRENT_HOME="/home/qbittorrent" \
-    TZ="Asia/Shanghai" \
-    PUID="1000" \
-    PGID="100" \
+ENV QBITTORRENT_HOME=/home/qbittorrent \
+    TZ=Asia/Shanghai \
+    PUID=1000 \
+    PGID=100 \
+    WEBUI_PORT=8080 \
+    BT_PORT=34567 \
     LANG=zh_CN.UTF-8 \
     SHELL=/bin/bash \
     PS1="\u@\h:\w \$ "

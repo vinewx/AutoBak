@@ -4,7 +4,7 @@ set_iyuu() {
     cd /iyuu
 
     ## 更新一次IYUU
-    if [[ ! -d /iyuu/.git ]]; then
+    if [[ ! -d .git ]]; then
         echo "Clone IYUUAutoReseed script..."
         rm -rf /iyuu/* 2>/dev/null
         git clone ${IYUU_REPO_URL} /tmp/iyuu

@@ -5,7 +5,7 @@ fix_config() {
     WEBUI_PORT=${WEBUI_PORT:-8080}
     if [ ! -s /data/config/qBittorrent.conf ]; then
         echo "Initializing qBittorrent configuration..."
-        cat > /data/config/qBittorrent.conf << EOL
+        cat > /data/config/qBittorrent.conf << EOF
 [General]
 ported_to_new_savepath_system=true
 
@@ -29,7 +29,7 @@ WebUI\AlternativeUIEnabled=false
 WebUI\Enabled=true
 WebUI\LocalHostAuth=false
 WebUI\Port=${WEBUI_PORT}
-EOL
+EOF
     fi
 
     echo "Overriding required parameters..."

@@ -17,9 +17,9 @@
 
 | 标签  | 备注 |
 | :-:  | -   |
-| `latest` `4.x.x` `4.x` `4` | qBittorrent正式发布的稳定版，没有集成IYUUPlus，其中最新的版本会额外增加`latest`标签，最新的v4版额外增加`4`标签，`4.x`同理。`latest`标签会在qBittorrent官方发布正式版后2小时内完成更新。|
-| `unstable` `4.x.xbetax` | qBittorrent发布的测试版，没有集成IYUUPlus，其中最新的测试版额外增加`unstable` 标签。 |
-| `4.x.x-iyuu` `iyuu`   | 基于正式版镜像，集成[IYUUPlus](https://github.com/ledccn/IYUUPlus)，其中最新的版本额外增加`iyuu`标签。 |
+| `4.x.x` `latest`        | 标签以纯数字版本号命名，这是qBittorrent正式发布的稳定版，其中最新的版本额外增加`latest`标签。 |
+| `4.x.x-iyuu` `iyuu`     | 标签中带有`iyuu`字样，基于qBittorrent稳定版集成了[IYUUPlus](https://github.com/ledccn/IYUUPlus)，其中最新的版本额外增加`iyuu`标签，自动设置好下载器。 |
+| `4.x.xbetax` `unstable` | 标签中带有`beta`字样，这是qBittorrent发布的测试版，其中最新的测试版额外增加`unstable` 标签。 |
 
 ## 更新日志
 
@@ -33,7 +33,7 @@
 
 ## 环境变量清单
 
-在下一节的创建命令中，包括已经提及的`WEBUI_PORT`, `BT_PORT`, `TZ`在内，总共以下环境变量，请根据需要参考创建命令中`WEBUI_PORT` `BT_PORT` `TZ`的形式自行补充添加到创建命令中。
+在下一节的创建命令中，包括已经提及的变量在内，总共以下环境变量，请根据需要参考创建命令中`WEBUI_PORT` `BT_PORT`的形式自行补充添加到创建命令中。
 
 *注1：默认值的含义是，你不设置这个环境变量为其他值，那么程序就自动使用默认值。*
 
@@ -91,7 +91,7 @@
 
 <summary markdown="span"><b>群晖</b></summary>
 
-请见 [这里](https://gitee.com/evine/dockerfiles/blob/master/qbittorrent/dsm.md)。安装后访问`http://ip:8080`。建议群晖也使用docker cli以命令行方式部署。
+请见 [这里](https://gitee.com/evine/dockerfiles/blob/master/qbittorrent/dsm.md)。安装后访问`http://ip:8080`。如想使用集成了IYUUPlus的qBittorrent（自动设置好IYUUPlus中的下载器），请使用docker cli以命令行方式部署。
 
 </details>
 
@@ -235,7 +235,7 @@ networks:
 │   └── rss                   # rss订阅下载文件保存目录
 ├── diy                       # 存放你自己编写的脚本的目录，diy.sh需要存放在此
 ├── downloads                 # 默认下载目录
-├── iyuu_db                   # 仅iyuu标签有此目录，用来保存IYUUPlus的配置文件
+├── iyuu_db                   # 仅iyuu标签有此目录，用来保存IYUUPlus的配置文件，IYUUPlus用户须保留此文件夹
 ├── logs -> data/logs         # 只是个软连接，连接到容器内的/data/data/logs
 ├── temp                      # 下载文件临时存放目录，默认在配置中未启用
 ├── torrents                  # 保存种子文件目录，默认在配置中未启用
@@ -283,13 +283,13 @@ networks:
 
 <details>
 
-<summary markdown="span"><b>如何从其他作者的镜像转移至本镜像</b></summary>
+<summary markdown="span"><b>如何从其他作者的镜像/套件版转移至本镜像</b></summary>
 
 -  **如果启用了ssl/https，请先在原qbittorrent的webui中禁用，或者将`qBittorrent.conf`中`WebUI\HTTPS\Enabled=true`改为`WebUI\HTTPS\Enabled=false`。**
 
 - 请注意要优雅的关闭旧容器后再处理配置文件。
 
-- 进入原来容器的映射目录下，在config下分别找到`qBittorrent.conf` `qBittorrent-data.conf` `rss`，在data下找到`BT_backup`，然后将其参考上面的目录树放在新容器的映射目录下，然后在创建容器时，保证新容器中的下载文件的保存路径和旧容器一致，并新建容器即可。
+- 进入原来容器的映射目录（或原套件版配置文件保存目录，可能是隐藏的）下，在config下分别找到`qBittorrent.conf` `qBittorrent-data.conf` `rss`，在data下找到`BT_backup`，然后将其参考上面的目录树放在新容器的映射目录下，然后在创建容器时，保证新容器中的下载文件的保存路径和旧容器一致，并新建容器即可。
 
 - 举例说明如何保证新容器中的下载文件的保存路径和旧容器一致，比如旧容器中下载了一个 `xxx.2020.BluRay.1080p.x264.DTS-XXX`，保存路径为`/movies`（宿主机上的真实路径为`/volume1/home/id/movies`），那么在新建新容器时，给新容器增加一个路径映射：`/volume1/home/id/movies:/movies`　即可。
 
@@ -484,7 +484,7 @@ docker exec -it qbittorrent del-unseed-dir
 
 <details>
 
-<summary markdown="span"><b>3. 仅`iyuu`标签可用的命令</b></summary>
+<summary markdown="span"><b>3. 仅“iyuu”标签可用的命令，点击展开</b></summary>
 
 ```
 # 更新IYUUPlus脚本

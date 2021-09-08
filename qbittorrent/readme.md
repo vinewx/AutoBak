@@ -79,7 +79,7 @@
 
 | 序号 | 变量名                   | 默认值         | 说明 |
 | :-: | :-:                     | :-:                                    | -    |
-|  1  | IYUU_REPO_URL           | `https://github.com/ledccn/IYUUPlus.git` | 指定从哪里获取IYUUPlus的代码，默认从github更新，如果你访问缓慢，可以设置为：`https://gitee.com/ledc/iyuuplus.git` |
+|  1  | IYUU_REPO_URL           | `https://gitee.com/ledc/iyuuplus.git` | 指定从哪里获取IYUUPlus的代码，默认从gitee更新，如果你想从github更新，可以设置为：`https://github.com/ledccn/IYUUPlus.git` |
 
 </details>
 
@@ -103,7 +103,6 @@
 ## latest标签或unstable标签
 docker run -dit \
   -v $PWD/qbittorrent:/data `# 冒号左边请修改为你想在本地保存的路径，这个路径用来保存你个人的配置文件` \
-  -e TZ="Asia/Shanghai" `# 时区` \
   -e PUID="1000"        `# 输入id -u可查询，群晖必须改` \
   -e PGID="100"         `# 输入id -g可查询，群晖必须改` \
   -e WEBUI_PORT="8080"  `# WEBUI控制端口，可自定义` \
@@ -119,10 +118,8 @@ docker run -dit \
 ## iyuu标签
 docker run -dit \
   -v $PWD/qbittorrent:/data `# 冒号左边请修改为你想在本地保存的路径，这个路径用来保存你个人的配置文件` \
-  -e TZ="Asia/Shanghai" `# 时区` \
   -e PUID="1000"        `# 输入id -u可查询，群晖必须改` \
   -e PGID="100"         `# 输入id -g可查询，群晖必须改` \
-  -e IYUU_REPO_URL="https://gitee.com/ledc/iyuuplus.git" \
   -e WEBUI_PORT="8080"  `# WEBUI控制端口，可自定义` \
   -e BT_PORT="34567"    `# BT监听端口，可自定义` \
   -p 8080:8080          `# 冒号左右一样，要和WEBUI_PORT一致，命令中的3个8080要改一起改` \
@@ -135,7 +132,7 @@ docker run -dit \
   nevinee/qbittorrent:iyuu
 ```
 
-- 除`TZ` `WEBUI_PORT` `BT_PORT` `PUID` `PGID`这几个环境变量外，如果你还需要使用其他环境变量，请根据[环境变量清单](#环境变量清单)按照`-e 变量名="变量值" \`的形式自行添加在创建命令中。
+- 除`WEBUI_PORT` `BT_PORT` `PUID` `PGID`这几个环境变量外，如果你还需要使用其他环境变量，请根据[环境变量清单](#环境变量清单)按照`-e 变量名="变量值" \`的形式自行添加在创建命令中。
 
 - armv7设备如若无法使用网络，可能是seccomp问题，详见 [这里](https://wiki.alpinelinux.org/wiki/Release_Notes_for_Alpine_3.13.0#time64_requirements)。可以在创建命令中增加一行`--security-opt seccomp=unconfined \` 来解决。
 
@@ -163,11 +160,9 @@ services:
     hostname: qbitorrent
     volumes:
       - ./data:/data      # 配置保存目录
-    environment:
+    environment:          # 下面未列出的其他环境变量请根据环境变量清单自行添加
       - WEBUI_PORT=8080   # WEBUI控制端口，可自定义
       - BT_PORT=34567     # BT监听端口，可自定义
-      - TZ=Asia/Shanghai  # 时区
-      - IYUU_REPO_URL=https://gitee.com/ledc/iyuuplus.git
       - PUID=1000         # 输入id -u可查询，群晖必须改
       - PGID=100          # 输入id -g可查询，群晖必须改
     ports:
@@ -201,23 +196,18 @@ services:
     hostname: qbitorrent
     volumes:
       - ./data:/data
-    environment:
+    environment:          # 下面未列出的其他环境变量请根据环境变量清单自行添加
       - WEBUI_PORT=8080   # WEBUI控制端口，可自定义
       - BT_PORT=34567     # BT监听端口，可自定义
-      - TZ=Asia/Shanghai  # 时区
       - PUID=1000         # 输入id -u可查询，群晖必须改
       - PGID=100          # 输入id -g可查询，群晖必须改
-    #security_opt:        # armv7设备请解除这两行注释
+    #security_opt:        # armv7设备请解除本行和下一行的注释
       #- seccomp=unconfined
 
 networks: 
   <你的macvlan网络名称>:
     external: true
 ```
-
-- 除`TZ` `WEBUI_PORT` `BT_PORT` `PUID` `PGID`这几个环境变量外，其他环境变量请根据[环境变量清单](#环境变量清单)自行添加在`environment`中。
-
-- armv7设备如若无法使用网络，可能是seccomp问题，详见 [这里](https://wiki.alpinelinux.org/wiki/Release_Notes_for_Alpine_3.13.0#time64_requirements)。
 
 - 创建完成后请访问`http://<IP>:<WEBUI_PORT>`（如未修改，对安装机默认是`http://127.0.0.1:8080`）来对qbittorrent作进一步设置，初始用户名密码：`admin/adminadmin`。如要在公网访问，请务必修改用户名和密码。
 

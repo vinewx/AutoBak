@@ -1,5 +1,5 @@
 FROM nevinee/qbittorrent
-ENV IYUU_REPO_URL=https://github.com/ledccn/IYUUPlus.git
+ENV IYUU_REPO_URL=https://gitee.com/ledc/iyuuplus.git
 RUN apk add --update --no-cache \
        tar \
        libressl \
@@ -26,7 +26,7 @@ RUN apk add --update --no-cache \
        php7-zlib \
        php7-xml \
     && git config --global pull.ff only \
-    && git clone ${IYUU_REPO_URL} /iyuu \
+    && git clone https://github.com/ledccn/IYUUPlus.git /iyuu \
     && echo -e "upload_max_filesize=100M\npost_max_size=108M\nmemory_limit=1024M\ndate.timezone=${TZ}" > /etc/php7/conf.d/99-overrides.ini \
     && rm -rf /var/cache/apk/* /tmp/*
 COPY s6-overlay-iyuu /

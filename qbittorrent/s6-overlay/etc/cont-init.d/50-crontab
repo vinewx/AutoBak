@@ -20,7 +20,7 @@ set_crontab() {
 
     ## iyuu-help
     if [[ ${CRON_IYUU_HELP} ]]; then
-        echo -e "# IyuuAutoReseed辅助任务，自动重校验、自动恢复做种\n${CRON_IYUU_HELP} iyuu-help\n" >> /tmp/crontab.list
+        echo -e "# IYUU辅助任务，自动重校验、自动恢复做种\n${CRON_IYUU_HELP} iyuu-help\n" >> /tmp/crontab.list
     fi
 
     ## detect-ip

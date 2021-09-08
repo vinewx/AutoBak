@@ -9,4 +9,4 @@ else
 fi
 
 cmd_curl_post="$cmd_curl -X POST"
-api_url_base="${url_prefix}127.0.0.1:${WEBUI_PORT}/api/v2"
+api_url_base="${url_prefix}127.0.0.1:${WEBUI_PORT:-34567}/api/v2"

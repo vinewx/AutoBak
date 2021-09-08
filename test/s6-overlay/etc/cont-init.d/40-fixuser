@@ -1,13 +1,13 @@
 #!/usr/bin/with-contenv bash
 
 fix_user() {
-    PUID=${PUID:-1500}
-    PGID=${PGID:-1500}
+    PUID=${PUID:-1000}
+    PGID=${PGID:-100}
     echo "Change owner to user qbittorrent..."
     echo "PUID=${PUID}"
     echo "PGID=${PGID}"
-    groupmod -o -g "$PGID" qbittorrent
-    usermod -o -u "$PUID" qbittorrent
+    groupmod -o -g "${PGID}" qbittorrent
+    usermod -o -u "${PUID}" qbittorrent
     chown -R qbittorrent:qbittorrent "${QBITTORRENT_HOME}" /data
 }
 

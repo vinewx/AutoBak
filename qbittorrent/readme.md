@@ -1,13 +1,14 @@
 ## 特点
 
-- 自动按`tracker`分类（可以选择关闭）。
-- 下载完成发送通知（可以选择关闭），可选途径：钉钉（[效果图](https://gitee.com/evine/dockerfiles/raw/master/qbittorrent/pictures/notify.png)）, Telegram, ServerChan, 爱语飞飞, PUSHPLUS推送加；搭配RSS功能（[RSS教程](https://www.jianshu.com/p/54e6137ea4e3)）自动下载效果很好；下载完成后还可以补充运行你的自定义脚本。
+- 自动按`tracker`分类（**可以选择关闭**）。
+- 下载完成发送通知（**可以选择关闭**），可选途径：钉钉（[效果图](https://gitee.com/evine/dockerfiles/raw/master/qbittorrent/pictures/notify.png)）, Telegram, ServerChan, 爱语飞飞, PUSHPLUS推送加；搭配RSS功能（[RSS教程](https://www.jianshu.com/p/54e6137ea4e3)）自动下载效果很好；下载完成后还可以补充运行你的自定义脚本。
 - 故障时发送通知，可选途径同上。
 - 按设定的cron检查tracker状态，如发现种子的tracker状态有问题，将给该种子添加`TrackerError`的标签，方便筛选；如果tracker出错数量超过设定的阈值，给设定渠道发送通知。
 - **一些辅助功能：批量修改tracker；检测指定文件夹下未做种的子文件夹/文件；配合IYUU自动重新校验和自动恢复做种；指定设备上线时自动限速；多时段限速等等。**
 - 日志输出到docker控制台，可从portainer查看。
 - `python`为可选安装项，设置为`true`就自动安装。
 - 体积小，默认中文UI，默认东八区时区。
+- `iyuu`标签集成了[IYUUPlus](https://github.com/ledccn/IYUUPlus)，减少IYUUPlus设置复杂程度。
 
 ## 标签
 
@@ -16,8 +17,9 @@
 
 | 标签  | 备注 |
 | :-:  | -   |
-| `latest` `4.x.x` `4.x` `4` | qBittorrent正式发布的稳定版，其中最新的版本会额外增加`latest`标签，最新的v4版额外增加`4`标签，`4.x`同理。`latest`标签会在qBittorrent官方发布正式版后2小时内完成更新。|
-| `unstable` `4.x.xbetax` | qBittorrent发布的测试版，其中最新的测试版额外增加`unstable` 标签。 |
+| `latest` `4.x.x` `4.x` `4` | qBittorrent正式发布的稳定版，没有集成IYUUPlus，其中最新的版本会额外增加`latest`标签，最新的v4版额外增加`4`标签，`4.x`同理。`latest`标签会在qBittorrent官方发布正式版后2小时内完成更新。|
+| `unstable` `4.x.xbetax` | qBittorrent发布的测试版，没有集成IYUUPlus，其中最新的测试版额外增加`unstable` 标签。 |
+| `4.x.x-iyuu` `iyuu`   | 基于正式版镜像，集成[IYUUPlus](https://github.com/ledccn/IYUUPlus)，其中最新的版本额外增加`iyuu`标签。 |
 
 ## 更新日志
 
@@ -42,6 +44,8 @@
 <details>
 
 <summary markdown="span"><b>点击这里展开环境变量列表</b></summary>
+
+**以下是所有标签均可用的环境变量：**
 
 | 序号 | 变量名                   | 默认值         | 说明 |
 | :-: | :-:                     | :-:           | -    |
@@ -69,7 +73,13 @@
 |  22 | CRON_TRACKER_ERROR      | 52 */4 * * *  | 检查tracker状态是否健康的cron，在设定的cron将检查所有种子的tracker状态，如果有问题就打上`TrackerError`的标签。对于种子很多的大户人家，建议把cron频率修改低一些，一天一次即可。 |
 |  23 | MONITOR_IP              |               | 可设置为局域网设备的ip，多个ip以半角空格分隔，形如：`192.168.1.5 192.168.1.9 192.168.1.20`。本变量作用：当检测到这些设置的ip中有任何一个ip在线时（检测频率为每分钟），自动启用qbittorent客户端的“备用速度限制”，如果都不在线就关闭“备用速度限制”。“备用速度限制”需要事先设置好限制速率，建议在路由器上给需要设置的设备固定ip。在docker cli中请使用一对双引号引起来，在docker-compose中不要使用引用。4.3.8+可用。 |
 |  24 | CRON_ALTER_LIMITS       |               | 启动和关闭“备用速度限制“的cron，主要针对多时段限速场景，当设置了`MONITOR_IP`时本变量的cron不生效（因为会冲突）。详见 [相关问题](#相关问题) 一节“如何使用 CRON_ALTER_LIMITS 这个环境变量”。4.3.8+可用。 |
-|  25 | CRON_IYUU_HELP          |               | IYUUAutoReseed辅助任务的cron，自动重校验、自动恢复做种，详见 [相关问题](#相关问题) 一节“如何使用 CRON_IYUU_HELP 这个环境变量”。4.3.8+可用。 |
+|  25 | CRON_IYUU_HELP          |               | IYUUPlus辅助任务的cron，自动重校验、自动恢复做种，详见 [相关问题](#相关问题) 一节“如何使用 CRON_IYUU_HELP 这个环境变量”。4.3.8+可用。 |
+
+**以下是仅`iyuu`标签额外可用的环境变量：**
+
+| 序号 | 变量名                   | 默认值         | 说明 |
+| :-: | :-:                     | :-:                                    | -    |
+|  1  | IYUU_REPO_URL           | `https://github.com/ledccn/IYUUPlus.git` | 指定从哪里获取IYUUPlus的代码，默认从github更新，如果你访问缓慢，可以设置为：`https://gitee.com/ledc/iyuuplus.git` |
 
 </details>
 
@@ -81,7 +91,7 @@
 
 <summary markdown="span"><b>群晖</b></summary>
 
-请见 [这里](https://gitee.com/evine/dockerfiles/blob/master/qbittorrent/dsm.md)。安装后访问`http://ip:8080`。
+请见 [这里](https://gitee.com/evine/dockerfiles/blob/master/qbittorrent/dsm.md)。安装后访问`http://ip:8080`。建议群晖也使用docker cli以命令行方式部署。
 
 </details>
 
@@ -90,27 +100,47 @@
 <summary markdown="span"><b>docker cli</b></summary>
 
 ```
+## latest标签或unstable标签
 docker run -dit \
   -v $PWD/qbittorrent:/data `# 冒号左边请修改为你想在本地保存的路径，这个路径用来保存你个人的配置文件` \
   -e TZ="Asia/Shanghai" `# 时区` \
+  -e PUID="1000"        `# 输入id -u可查询，群晖必须改` \
+  -e PGID="100"         `# 输入id -g可查询，群晖必须改` \
   -e WEBUI_PORT="8080"  `# WEBUI控制端口，可自定义` \
   -e BT_PORT="34567"    `# BT监听端口，可自定义` \
-  -p 8080:8080          `# 冒号左右一样，要和WEBUI_PORT一致` \
-  -p 34567:34567/tcp    `# 冒号左右一样，要和BT_PORT一致` \
-  -p 34567:34567/udp    `# 冒号左右一样，要和BT_PORT一致` \
+  -p 8080:8080          `# 冒号左右一样，要和WEBUI_PORT一致，命令中的3个8080要改一起改` \
+  -p 34567:34567/tcp    `# 冒号左右一样，要和BT_PORT一致，命令中的5个34567要改一起改` \
+  -p 34567:34567/udp    `# 冒号左右一样，要和BT_PORT一致，命令中的5个34567要改一起改` \
   --restart always \
   --name qbittorrent \
   --hostname qbittorrent \
-  nevinee/qbittorrent
+  nevinee/qbittorrent   `# 如想参与qbittorrent测试工作，可以指定测试标签`nevinee/qbittorrent:unstable`
+
+## iyuu标签
+docker run -dit \
+  -v $PWD/qbittorrent:/data `# 冒号左边请修改为你想在本地保存的路径，这个路径用来保存你个人的配置文件` \
+  -e TZ="Asia/Shanghai" `# 时区` \
+  -e PUID="1000"        `# 输入id -u可查询，群晖必须改` \
+  -e PGID="100"         `# 输入id -g可查询，群晖必须改` \
+  -e WEBUI_PORT="8080"  `# WEBUI控制端口，可自定义` \
+  -e BT_PORT="34567"    `# BT监听端口，可自定义` \
+  -p 8080:8080          `# 冒号左右一样，要和WEBUI_PORT一致，命令中的3个8080要改一起改` \
+  -p 34567:34567/tcp    `# 冒号左右一样，要和BT_PORT一致，命令中的5个34567要改一起改` \
+  -p 34567:34567/udp    `# 冒号左右一样，要和BT_PORT一致，命令中的5个34567要改一起改` \
+  -p 8787:8787          `# IYUUPlus的WebUI控制端口` \
+  --restart always \
+  --name qbittorrent \
+  --hostname qbittorrent \
+  nevinee/qbittorrent:iyuu
 ```
 
-- 除`TZ` `WEBUI_PORT` `BT_PORT`这三个环境变量外，如果你还需要使用其他环境变量，请根据[环境变量清单](#环境变量清单)按照`-e 变量名="变量值" \`的形式自行添加在创建命令中。
+- 除`TZ` `WEBUI_PORT` `BT_PORT` `PUID` `PGID`这几个环境变量外，如果你还需要使用其他环境变量，请根据[环境变量清单](#环境变量清单)按照`-e 变量名="变量值" \`的形式自行添加在创建命令中。
 
 - armv7设备如若无法使用网络，可能是seccomp问题，详见 [这里](https://wiki.alpinelinux.org/wiki/Release_Notes_for_Alpine_3.13.0#time64_requirements)。可以在创建命令中增加一行`--security-opt seccomp=unconfined \` 来解决。
 
-- 创建完成后请访问`http://<IP>:<WEBUI_PORT>`（如未修改，对安装机默认是`http://127.0.0.1:8080`）来作进一步设置，初始用户名密码：`admin/adminadmin`。如要在公网访问，请务必修改用户名和密码。
+- 创建完成后请访问`http://<IP>:<WEBUI_PORT>`（如未修改，对安装机默认是`http://127.0.0.1:8080`）来对qbittorrent作进一步设置，初始用户名密码：`admin/adminadmin`。如要在公网访问，请务必修改用户名和密码。
 
-- 如想参与qbittorrent测试工作，可以指定测试标签，如`nevinee/qbittorrent:unstable`，请向qbittorrent官方反馈遇到的问题。
+- 针对`iyuu`标签，创建后可访问`http://<IP>:8787`进行IYUUPlus设置。
 
 </details>
 
@@ -124,7 +154,7 @@ docker run -dit \
 version: "2.0"
 services:
   qbittorrent:
-    image: nevinee/qbittorrent
+    image: nevinee/qbittorrent  # 如想参与测试工作可以指定nevinee/qbittorrent:unstable，如想使用集成了iyuu的版本请指定nevinee/qbittorrent:iyuu
     container_name: qbittorrent
     restart: always
     tty: true
@@ -136,11 +166,14 @@ services:
       - WEBUI_PORT=8080   # WEBUI控制端口，可自定义
       - BT_PORT=34567     # BT监听端口，可自定义
       - TZ=Asia/Shanghai  # 时区
+      - PUID=1000         # 输入id -u可查询，群晖必须改
+      - PGID=100          # 输入id -g可查询，群晖必须改
     ports:
-      - 8080:8080        # 冒号左右一致，必须同WEBUI_PORT一样
-      - 34567:34567      # 冒号左右一致，必须同BT_PORT一样
-      - 34567:34567/udp  # 冒号左右一致，必须同BT_PORT一样
-    #security_opt:       # armv7设备请解除这两行注释
+      - 8080:8080        # 冒号左右一致，必须同WEBUI_PORT一样，本文件中的3个8080要改一起改
+      - 34567:34567      # 冒号左右一致，必须同BT_PORT一样，本文件中的5个34567要改一起改
+      - 34567:34567/udp  # 冒号左右一致，必须同BT_PORT一样，本文件中的5个34567要改一起改
+      #- 8787:8787       # 如使用的是nevinee/qbittorrent:iyuu标签，请解除本行注释
+    #security_opt:       # armv7设备请解除本行和下一行的注释
       #- seccomp=unconfined
 ```
 
@@ -150,7 +183,7 @@ services:
 version: "2.0"
 services:
   qbittorrent:
-    image: nevinee/qbittorrent
+    image: nevinee/qbittorrent # 如想参与测试工作可以指定nevinee/qbittorrent:unstable，如想使用集成了iyuu的版本，请指定nevinee/qbittorrent:iyuu
     container_name: qbittorrent
     restart: always
     tty: true
@@ -170,6 +203,8 @@ services:
       - WEBUI_PORT=8080   # WEBUI控制端口，可自定义
       - BT_PORT=34567     # BT监听端口，可自定义
       - TZ=Asia/Shanghai  # 时区
+      - PUID=1000         # 输入id -u可查询，群晖必须改
+      - PGID=100          # 输入id -g可查询，群晖必须改
     #security_opt:        # armv7设备请解除这两行注释
       #- seccomp=unconfined
 
@@ -178,13 +213,13 @@ networks:
     external: true
 ```
 
-- 除`TZ` `WEBUI_PORT` `BT_PORT`这三个环境变量外，其他环境变量请根据[环境变量清单](#环境变量清单)自行添加在environment中。
+- 除`TZ` `WEBUI_PORT` `BT_PORT` `PUID` `PGID`这几个环境变量外，其他环境变量请根据[环境变量清单](#环境变量清单)自行添加在`environment`中。
 
 - armv7设备如若无法使用网络，可能是seccomp问题，详见 [这里](https://wiki.alpinelinux.org/wiki/Release_Notes_for_Alpine_3.13.0#time64_requirements)。
 
-- 创建完成后请访问`http://<IP>:<WEBUI_PORT>`来作进一步设置，初始用户名密码：`admin/adminadmin`。如要在公网访问，请务必修改用户名和密码。
+- 创建完成后请访问`http://<IP>:<WEBUI_PORT>`（如未修改，对安装机默认是`http://127.0.0.1:8080`）来对qbittorrent作进一步设置，初始用户名密码：`admin/adminadmin`。如要在公网访问，请务必修改用户名和密码。
 
-- 如想参与qbittorrent测试工作，可以指定测试标签，如`nevinee/qbittorrent:unstable`，如遇到问题请向qbittorrent官方反馈。
+- 针对`iyuu`标签，创建后可访问`http://<IP>:8787`进行IYUUPlus设置。
 
 </details>
 
@@ -208,6 +243,7 @@ networks:
 │   └── rss                   # rss订阅下载文件保存目录
 ├── diy                       # 存放你自己编写的脚本的目录，diy.sh需要存放在此
 ├── downloads                 # 默认下载目录
+├── iyuu_db                   # 仅iyuu标签有此目录，用来保存IYUUPlus的配置文件
 ├── logs -> data/logs         # 只是个软连接，连接到容器内的/data/data/logs
 ├── temp                      # 下载文件临时存放目录，默认在配置中未启用
 ├── torrents                  # 保存种子文件目录，默认在配置中未启用
@@ -356,7 +392,7 @@ curl -X POST -d 'json={"alternative_webui_enabled":false}' http://127.0.0.1:${WE
 
 <summary markdown="span"><b>将qbittorrent安装在macvlan网络上时，如何使用IYUUAutoReseed自动辅种</b></summary>
 
-将两个容器都安装在同一个macvlan网络上即可。
+将两个容器都安装在同一个macvlan网络上即可，或者直接安装`nevinee/qbittorrent:iyuu`标签。
 
 </details>
 
@@ -393,7 +429,7 @@ curl -X POST -d 'json={"alternative_webui_enabled":false}' http://127.0.0.1:${WE
 
 - 配合IYUUAutoReseed，将CRON_IYUU_HELP设置在IYUUAutoReseed自动辅种任务的cron以后，并运行若干次即可（因为校验比较费时，所以要多次运行）。
 
-- 比如你IYUUAutoReseed辅种任务的cron是`22 7,19 * * *`，你想从辅种任务5分钟后，每10分钟运行一次，共运行4次，那么可以设置CRON_IYUU_HELP为：`27-57/10 7,19 * * *`。
+- 比如你IYUUAutoReseed辅种任务的cron是`22 7 * * *`，你想从辅种任务3分钟后，每10分钟运行一次，共运行4次，那么可以设置CRON_IYUU_HELP为：`25-55/10 7 * * *`。
 
 - 在docker cli中请使用一对双引号引起来，在docker-compose.yml中请勿增加引号。
 
@@ -403,7 +439,7 @@ curl -X POST -d 'json={"alternative_webui_enabled":false}' http://127.0.0.1:${WE
 
 <details>
 
-<summary markdown="span"><b>由设置的cron或在下载完成时自动运行的命令，点击本文字可展开详情</b></summary>
+<summary markdown="span"><b>1. 由设置的cron或在下载完成时自动运行的命令（所有标签可用），点击本文字可展开详情</b></summary>
 
 ```
 # 发送通知
@@ -439,7 +475,7 @@ docker exec qbittorrent iyuu-help
 
 <details open>
 
-<summary markdown="span"><b>需要手动运行的命令</b></summary>
+<summary markdown="span"><b>2. 需要手动运行的命令（所有标签可用）</b></summary>
 
 ```
 # 查看qbittorrent日志，也可以直接在portainer控制台中看到
@@ -452,6 +488,22 @@ docker exec -it qbittorrent change-tracker
 docker exec -it qbittorrent del-unseed-dir
 ```
 
+</details>
+
+<details>
+
+<summary markdown="span"><b>3. 仅`iyuu`标签可用的命令</b></summary>
+
+```
+# 更新IYUUPlus脚本
+docker exec -it qbittorrent git -C /iyuu pull
+
+# 重启IYUUPlus
+docker exec -it qbittorrent php /iyuu/start.php restart -d 
+```
+
+</details>
+
 ## 效果图
 
 ![notify](https://gitee.com/evine/dockerfiles/raw/master/qbittorrent/pictures/notify.png)
@@ -462,7 +514,6 @@ docker exec -it qbittorrent del-unseed-dir
 
 ![del-unseed-dir](https://gitee.com/evine/dockerfiles/raw/master/qbittorrent/pictures/del-unseed-dir.png)
 
-</details>
 
 ## 参考
 

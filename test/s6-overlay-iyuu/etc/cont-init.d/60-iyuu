@@ -1,0 +1,57 @@
+#!/usr/bin/with-contenv bash
+
+set_iyuu() {
+    cd /iyuu
+
+    ## 更新一次IYUU
+    if [[ ! -d /iyuu/.git ]]; then
+        echo "Clone IYUUAutoReseed script..."
+        rm -rf /iyuu/* 2>/dev/null
+        git clone ${IYUU_REPO_URL} /tmp/iyuu
+        find /tmp/iyuu -mindepth 1 -maxdepth 1 | xargs -I {} cp -r {} /iyuu
+        rm -rf /tmp/iyuu
+    else
+        echo "Update IYUUAutoReseed script..."
+        git remote set-url origin ${IYUU_REPO_URL}
+        git fetch --all
+        git reset --hard origin/master
+        git pull
+    fi
+
+    ## 复制.env
+    if [[ ! -s .env ]]; then
+        cp -f .env.example .env
+    fi
+
+    ## 创建/data/iyuu_db文件夹，并软连接到/iyuu/db
+    IYUU_DB=/data/iyuu_db
+    [ ! -d ${IYUU_DB} ] && mkdir ${IYUU_DB}
+    if [[ $(readlink -f /iyuu/db 2>/dev/null) != ${IYUU_DB} ]]; then
+        rm -rf /iyuu/db 2>/dev/null
+        ln -sf ${IYUU_DB} /iyuu/db
+    fi
+
+    ## 补充IYUU更新脚本并重启程序的的cron
+    minute=$(($RANDOM % 60))
+    hour_start=$(($RANDOM % 6))
+    hour_interval=$(($RANDOM % 4 + 6))
+    CRON_UPDATE="${minute} ${hour_start}-23/${hour_interval} * * *"
+    echo -e "$(crontab -l)\n\n# 更新并重启IYUUAutoReseed\n${CRON_UPDATE} cd /iyuu && git fetch --all && git reset --hard origin/master && git pull && php start.php restart -d" | crontab -l
+
+    ## 写入/data/iyuu_db/client.json
+    CLIENT_FILE=/data/iyuu_db/client.json
+    if [[ ! -s ${CLIENT_FILE} ]]; then
+        . /usr/local/bin/share
+        HOST="${url_prefix}127.0.0.1:${WEBUI_PORT:-34567}"
+        cur_timestamp=$(( $(date +'%s') * 1000 + $(date +'%N') / 1000000 ))
+        PID="pid$$_${cur_timestamp}"
+        CLIENT_INFO="ewogICJQSUQiOiB7CiAgICAidHlwZSI6ICJxQml0dG9ycmVudCIsCiAgICAibmFtZSI6ICJsb2NhbCIsCiAgICAiaG9zdCI6ICJIT1NUIiwKICAgICJlbmRwb2ludCI6ICIiLAogICAgInVzZXJuYW1lIjogIiIsCiAgICAicGFzc3dvcmQiOiAiIiwKICAgICJkb2NrZXIiOiAib24iLAogICAgImRlZmF1bHQiOiAib24iLAogICAgInJvb3RfZm9sZGVyIjogIm9uIiwKICAgICJ3YXRjaCI6ICIvZGF0YS9kYXRhL3dhdGNoIiwKICAgICJkb3dubG9hZHNEaXIiOiAiL2RhdGEvZGF0YS9kb3dubG9hZHMiLAogICAgIkJUX2JhY2t1cCI6ICIvZGF0YS9kYXRhL0JUX2JhY2t1cCIsCiAgICAidXVpZCI6ICJQSUQiCiAgfQp9"
+        echo -en "$CLIENT_INFO" | base64 -d > ${CLIENT_FILE}
+        sed -i "{s/PID/${PID}/g; s/HOST/${HOST}/g}" ${CLIENT_FILE}
+    fi
+
+    ## 以Daemon形式启动IYUU
+    php start.php start -d
+}
+
+set_iyuu 2>&1 | sed "s#^#[cont-init.d] $(basename $0): \1#g"

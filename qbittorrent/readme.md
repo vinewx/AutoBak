@@ -8,7 +8,7 @@
 - 日志输出到docker控制台，可从portainer查看。
 - `python`为可选安装项，设置为`true`就自动安装。
 - 体积小，默认中文UI，默认东八区时区。
-- `iyuu`标签集成了[IYUUPlus](https://github.com/ledccn/IYUUPlus)，减少IYUUPlus设置复杂程度。
+- `iyuu`标签集成了[IYUUPlus](https://github.com/ledccn/IYUUPlus)，自动设置好下载器，减少IYUUPlus设置复杂程度。
 
 ## 标签
 
@@ -54,7 +54,7 @@
 |  3  | WEBUI_PORT              | 8080          | WebUI访问端口，建议自定义，如需公网访问，需要将qBittorrent和公网之间所有网关设备上都设置端口转发。 |
 |  4  | BT_PORT                 | 34567         | BT监听端口，建议自定义，如需达到`可连接`状态，需要将qBittorrent和公网之间所有网关设备上都设置端口转发。 |
 |  5  | TZ                      | Asia/Shanghai | 时区，可填内容详见：https://meetingplanner.io/zh-cn/timezone/cities |
-|  6  | INSTALL_PYTHON          | false         | 默认不安装python，如需要python，请设置为`true`，设置后将在首次启动容器时自动安装好。 |
+|  6  | INSTALL_PYTHON          | false         | 默认不安装python，如需要python（qBittorrent的搜索功能必须安装python），请设置为`true`，设置后将在首次启动容器时自动安装好。 |
 |  7  | ENABLE_AUTO_CATEGORY    | true          | 是否自动分类，默认自动分类，如不想自动分类，请设置为`false`。4.3.7+可用。 |
 |  8  | DL_FINISH_NOTIFY        | true          | 默认会在下载完成时向设定的通知渠道发送种子下载完成的通知消息，如不想收此类通知，则设置为`false`。 |
 |  9  | TRACKER_ERROR_COUNT_MIN | 3             | 可以设置的值：正整数。在检测到tracker出错的种子数量超过这个阈值时，给设置的通知渠道发送通知。4.3.7+可用。 |
@@ -71,7 +71,7 @@
 |  20 | CRON_HEALTH_CHECK       | 12 * * * *    | 宕机检查的cron，在设定的cron运行时如发现qbittorrent-nox宕机了，则向设置的通知渠道发送通知。 |
 |  21 | CRON_AUTO_CATEGORY      | 32 */2 * * *  | 自动分类的cron，在设定的cron将所有种子按tracker分类。对于种子很多的大户人家，建议把cron频率修改低一些，一天一次即可。此cron可以由`ENABLE_AUTO_CATEGORY`关闭，关闭后不生效。 |
 |  22 | CRON_TRACKER_ERROR      | 52 */4 * * *  | 检查tracker状态是否健康的cron，在设定的cron将检查所有种子的tracker状态，如果有问题就打上`TrackerError`的标签。对于种子很多的大户人家，建议把cron频率修改低一些，一天一次即可。 |
-|  23 | MONITOR_IP              |               | 可设置为局域网设备的ip，多个ip以半角空格分隔，形如：`192.168.1.5 192.168.1.9 192.168.1.20`。本变量作用：当检测到这些设置的ip中有任何一个ip在线时（检测频率为每分钟），自动启用qbittorent客户端的“备用速度限制”，如果都不在线就关闭“备用速度限制”。“备用速度限制”需要事先设置好限制速率，建议在路由器上给需要设置的设备固定ip。在docker cli中请使用一对双引号引起来，在docker-compose中不要使用引用。4.3.8+可用。 |
+|  23 | MONITOR_IP              |               | 本变量作用：当检测到这些设置的ip中有任何一个ip在线时（检测频率为每分钟），自动启用qbittorent客户端的“备用速度限制”，如果都不在线就关闭“备用速度限制”。可设置为局域网设备的ip，多个ip以半角空格分隔，形如：`192.168.1.5 192.168.1.9 192.168.1.20`。“备用速度限制”需要事先设置好限制速率，建议在路由器上给需要设置的设备固定ip。在docker cli中请使用一对双引号引起来，在docker-compose中不要使用引用。4.3.8+可用。 |
 |  24 | CRON_ALTER_LIMITS       |               | 启动和关闭“备用速度限制“的cron，主要针对多时段限速场景，当设置了`MONITOR_IP`时本变量的cron不生效（因为会冲突）。详见 [相关问题](#相关问题) 一节“如何使用 CRON_ALTER_LIMITS 这个环境变量”。4.3.8+可用。 |
 |  25 | CRON_IYUU_HELP          |               | IYUUPlus辅助任务的cron，自动重校验、自动恢复做种，详见 [相关问题](#相关问题) 一节“如何使用 CRON_IYUU_HELP 这个环境变量”。4.3.8+可用。 |
 
@@ -113,7 +113,7 @@ docker run -dit \
   --restart always \
   --name qbittorrent \
   --hostname qbittorrent \
-  nevinee/qbittorrent   `# 如想参与qbittorrent测试工作，可以指定测试标签`nevinee/qbittorrent:unstable`
+  nevinee/qbittorrent   `# 如想参与qbittorrent测试工作，可以指定测试标签nevinee/qbittorrent:unstable`
 
 ## iyuu标签
 docker run -dit \
